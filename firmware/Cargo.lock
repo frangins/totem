@@ -587,10 +587,18 @@ dependencies = [
  "cortex-m-rtic",
  "defmt",
  "defmt-rtt",
- "embedded-hal",
  "panic-probe",
  "stm32l4xx-hal",
  "systick-monotonic",
+ "totem_utils",
+]
+
+[[package]]
+name = "totem_utils"
+version = "1.0.0-dev"
+dependencies = [
+ "cortex-m",
+ "embedded-hal",
 ]
 
 [[package]]

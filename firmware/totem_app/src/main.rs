@@ -23,7 +23,6 @@ use panic_probe as _;
 
 #[rtic::app(device = stm32l4xx_hal::pac, dispatchers = [TIM2])]
 mod app {
-    use embedded_hal::blocking::delay::DelayUs;
     use stm32l4xx_hal::{
         adc::ADC,
         gpio::{Analog, PA0},
@@ -31,25 +30,7 @@ mod app {
     };
     use systick_monotonic::Systick;
 
-    /// A basic Delay using `cortex_m::asm::delay`.
-    pub struct AsmDelay {
-        /// The AHB Frequency in Hz.
-        ahb_frequency: u32,
-    }
-
-    impl AsmDelay {
-        /// Initialises an AsmDelay.
-        pub fn new(ahb_frequency: u32) -> Self {
-            Self { ahb_frequency }
-        }
-    }
-
-    impl DelayUs<u32> for AsmDelay {
-        fn delay_us(&mut self, us: u32) {
-            let tick = (us as u64) * (self.ahb_frequency as u64) / 1_000_000;
-            cortex_m::asm::delay(tick as u32);
-        }
-    }
+    use totem_utils::delay::AsmDelay;
 
     #[monotonic(binds = SysTick, default = true)]
     type Monotonic = Systick<100>;
