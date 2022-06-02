@@ -583,14 +583,21 @@ dependencies = [
 name = "totem_app"
 version = "1.0.0-dev"
 dependencies = [
- "cortex-m",
  "cortex-m-rtic",
  "defmt",
  "defmt-rtt",
  "panic-probe",
- "stm32l4xx-hal",
  "systick-monotonic",
+ "totem_board",
  "totem_utils",
+]
+
+[[package]]
+name = "totem_board"
+version = "1.0.0-dev"
+dependencies = [
+ "cortex-m",
+ "stm32l4xx-hal",
 ]
 
 [[package]]

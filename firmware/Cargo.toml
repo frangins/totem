@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "totem_app",
+    "totem_board",
     "totem_utils",
 ]
 

@@ -21,15 +21,14 @@
 use defmt_rtt as _;
 use panic_probe as _;
 
-#[rtic::app(device = stm32l4xx_hal::pac, dispatchers = [TIM2])]
+#[rtic::app(device = totem_board::pac, dispatchers = [TIM2])]
 mod app {
-    use stm32l4xx_hal::{
+    use systick_monotonic::Systick;
+    use totem_board::{
         adc::ADC,
         gpio::{Analog, PA0},
         prelude::*,
     };
-    use systick_monotonic::Systick;
-
     use totem_utils::delay::AsmDelay;
 
     #[monotonic(binds = SysTick, default = true)]
