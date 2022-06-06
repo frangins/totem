@@ -25,11 +25,9 @@ use panic_probe as _;
 mod app {
     use systick_monotonic::Systick;
     use totem_board::{
-        adc::ADC,
-        gpio::{Analog, PA0},
+        board::{Board, P1, P_ADC},
         prelude::*,
     };
-    use totem_utils::delay::AsmDelay;
 
     #[monotonic(binds = SysTick, default = true)]
     type Monotonic = Systick<100>;
@@ -39,8 +37,8 @@ mod app {
 
     #[local]
     struct LocalResources {
-        adc: ADC,
-        p1: PA0<Analog>,
+        p_adc: P_ADC,
+        p1: P1,
     }
 
     #[init]
@@ -52,25 +50,11 @@ mod app {
         let cp = cx.core;
         let dp = cx.device;
 
-        // Clock configuration.
-        let mut rcc = dp.RCC.constrain();
-        let mut flash = dp.FLASH.constrain();
-        let mut pwr = dp.PWR.constrain(&mut rcc.apb1r1);
-        let clocks = rcc.cfgr.sysclk(80.MHz()).freeze(&mut flash.acr, &mut pwr);
-
         let monotonic = Systick::new(cp.SYST, 80_000_000);
 
-        let mut delay = AsmDelay::new(clocks.sysclk().to_Hz());
-        let adc = ADC::new(
-            dp.ADC1,
-            dp.ADC_COMMON,
-            &mut rcc.ahb2,
-            &mut rcc.ccipr,
-            &mut delay,
-        );
-
-        let mut gpioa = dp.GPIOA.split(&mut rcc.ahb2);
-        let p1 = gpioa.pa0.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
+        let board = Board::init(dp);
+        let p_adc = board.p_adc;
+        let p1 = board.p1;
 
         defmt::info!("Firmware initialised!");
 
@@ -78,7 +62,7 @@ mod app {
 
         (
             SharedResources {},
-            LocalResources { adc, p1 },
+            LocalResources { p_adc, p1 },
             init::Monotonics(monotonic),
         )
     }
@@ -90,11 +74,13 @@ mod app {
         }
     }
 
-    #[task(local = [adc, p1])]
+    #[task(local = [p_adc, p1])]
     fn print_value(cx: print_value::Context) {
+        let print_value::LocalResources { p1, p_adc } = cx.local;
+
         print_value::spawn_at(monotonics::now() + 10.millis()).unwrap();
 
-        let value = cx.local.adc.read(cx.local.p1).unwrap();
+        let value = p_adc.read(p1).unwrap();
         defmt::info!("Value: {}", value);
     }
 }

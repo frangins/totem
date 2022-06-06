@@ -16,6 +16,7 @@
 //! Board support crate for Totem.
 
 #![no_std]
+#![allow(non_camel_case_types)]
 #![warn(clippy::redundant_pub_crate)]
 #![warn(clippy::use_self)]
 #![deny(missing_docs)]
@@ -28,3 +29,5 @@ pub use crate::hal::prelude;
 pub use crate::hal::*;
 pub use crate::pac::*;
 pub use cortex_m::*;
+
+pub mod board;
