@@ -2,6 +2,7 @@
 members = [
     "totem_app",
     "totem_board",
+    "totem_ui",
     "totem_utils",
 ]
 

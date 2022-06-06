@@ -589,6 +589,7 @@ dependencies = [
  "panic-probe",
  "systick-monotonic",
  "totem_board",
+ "totem_ui",
 ]
 
 [[package]]
@@ -598,6 +599,13 @@ dependencies = [
  "cortex-m",
  "stm32l4xx-hal",
  "totem_utils",
+]
+
+[[package]]
+name = "totem_ui"
+version = "1.0.0-dev"
+dependencies = [
+ "totem_board",
 ]
 
 [[package]]

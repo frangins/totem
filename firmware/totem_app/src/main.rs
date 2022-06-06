@@ -24,10 +24,8 @@ use panic_probe as _;
 #[rtic::app(device = totem_board::pac, dispatchers = [TIM2])]
 mod app {
     use systick_monotonic::Systick;
-    use totem_board::{
-        board::{Board, P1, P_ADC},
-        prelude::*,
-    };
+    use totem_board::{board::Board, prelude::*};
+    use totem_ui::UI;
 
     #[monotonic(binds = SysTick, default = true)]
     type Monotonic = Systick<100>;
@@ -37,8 +35,7 @@ mod app {
 
     #[local]
     struct LocalResources {
-        p_adc: P_ADC,
-        p1: P1,
+        ui: UI,
     }
 
     #[init]
@@ -55,6 +52,7 @@ mod app {
         let board = Board::init(dp);
         let p_adc = board.p_adc;
         let p1 = board.p1;
+        let ui = UI::new(p_adc, p1);
 
         defmt::info!("Firmware initialised!");
 
@@ -62,7 +60,7 @@ mod app {
 
         (
             SharedResources {},
-            LocalResources { p_adc, p1 },
+            LocalResources { ui },
             init::Monotonics(monotonic),
         )
     }
@@ -74,13 +72,12 @@ mod app {
         }
     }
 
-    #[task(local = [p_adc, p1])]
+    #[task(local = [ui])]
     fn print_value(cx: print_value::Context) {
-        let print_value::LocalResources { p1, p_adc } = cx.local;
-
         print_value::spawn_at(monotonics::now() + 10.millis()).unwrap();
 
-        let value = p_adc.read(p1).unwrap();
+        let ui = cx.local.ui;
+        let value = ui.read_p1();
         defmt::info!("Value: {}", value);
     }
 }
