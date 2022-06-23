@@ -23,33 +23,68 @@
 #![forbid(unsafe_code)]
 
 use totem_board::{
-    adc::Channel,
-    board::{P1, P_ADC},
+    adc::{Channel, ADC},
     prelude::*,
 };
 
 /// The user interface for Totem.
-pub struct UI {
-    p_adc: P_ADC,
-    p1: P1,
+pub struct UI<PMode, PBrightness, PSpeed, PTemperature> {
+    p_adc: ADC,
+    p_mode: PMode,
+    p_brightness: PBrightness,
+    p_speed: PSpeed,
+    p_temperature: PTemperature,
 }
 
 const ITERATIONS: u32 = 200;
 
-impl UI {
+impl<
+        PMode: Channel,
+        PBrightness: Channel,
+        PSpeed: Channel,
+        PTemperature: Channel,
+    > UI<PMode, PBrightness, PSpeed, PTemperature>
+{
     /// Creates a new UI.
-    pub fn new(p_adc: P_ADC, p1: P1) -> Self {
-        Self { p_adc, p1 }
+    pub fn new(
+        p_adc: ADC,
+        p_mode: PMode,
+        p_brightness: PBrightness,
+        p_speed: PSpeed,
+        p_temperature: PTemperature,
+    ) -> Self {
+        Self {
+            p_adc,
+            p_mode,
+            p_brightness,
+            p_speed,
+            p_temperature,
+        }
     }
 
-    /// Reads the value of the first potentiometer.
-    pub fn read_p1(&mut self) -> u16 {
-        read_mean(&mut self.p_adc, &mut self.p1, ITERATIONS)
+    /// Reads the value of the mode potentiometer.
+    pub fn read_mode(&mut self) -> u16 {
+        read_mean(&mut self.p_adc, &mut self.p_mode, ITERATIONS)
+    }
+
+    /// Reads the value of the brightness potentiometer.
+    pub fn read_brightness(&mut self) -> u16 {
+        read_mean(&mut self.p_adc, &mut self.p_brightness, ITERATIONS)
+    }
+
+    /// Reads the value of the speed potentiometer.
+    pub fn read_speed(&mut self) -> u16 {
+        read_mean(&mut self.p_adc, &mut self.p_speed, ITERATIONS)
+    }
+
+    /// Reads the value of the temperature potentiometer.
+    pub fn read_temperature(&mut self) -> u16 {
+        read_mean(&mut self.p_adc, &mut self.p_temperature, ITERATIONS)
     }
 }
 
 fn read_mean(
-    adc: &mut P_ADC,
+    adc: &mut ADC,
     channel: &mut impl Channel,
     iterations: u32,
 ) -> u16 {

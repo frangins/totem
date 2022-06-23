@@ -24,7 +24,10 @@ use panic_probe as _;
 #[rtic::app(device = totem_board::pac, dispatchers = [TIM2])]
 mod app {
     use systick_monotonic::Systick;
-    use totem_board::{board::Board, prelude::*};
+    use totem_board::{
+        board::{Board, P1, P2, P3, P4},
+        prelude::*,
+    };
     use totem_ui::UI;
 
     #[monotonic(binds = SysTick, default = true)]
@@ -35,7 +38,7 @@ mod app {
 
     #[local]
     struct LocalResources {
-        ui: UI,
+        ui: UI<P1, P2, P3, P4>,
     }
 
     #[init]
@@ -49,10 +52,19 @@ mod app {
 
         let monotonic = Systick::new(cp.SYST, 80_000_000);
 
-        let board = Board::init(dp);
-        let p_adc = board.p_adc;
-        let p1 = board.p1;
-        let ui = UI::new(p_adc, p1);
+        let Board {
+            p1,
+            p2,
+            p3,
+            p4,
+            b1: _,
+            b2: _,
+            microphone: _,
+            p_adc,
+            led_spi: _,
+        } = Board::init(dp);
+
+        let ui = UI::new(p_adc, p1, p2, p3, p4);
 
         defmt::info!("Firmware initialised!");
 
@@ -77,7 +89,7 @@ mod app {
         print_value::spawn_at(monotonics::now() + 10.millis()).unwrap();
 
         let ui = cx.local.ui;
-        let value = ui.read_p1();
+        let value = ui.read_mode();
         defmt::info!("Value: {}", value);
     }
 }
