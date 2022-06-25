@@ -30,18 +30,18 @@ use crate::{
 
 /// The Totem board.
 pub struct Board {
-    /// The first potentiometer.
-    pub p1: P1,
-    /// The second potentiometer.
-    pub p2: P2,
-    /// The third potentiometer.
-    pub p3: P3,
-    /// The fourth potentiometer.
-    pub p4: P4,
-    /// The fifth potentiometer.
-    pub p5: P5,
-    /// The sixth potentiometer.
-    pub p6: P6,
+    /// The first rotation potentiometer.
+    pub r1: R1,
+    /// The second rotation potentiometer.
+    pub r2: R2,
+    /// The third rotation potentiometer.
+    pub r3: R3,
+    /// The fourth rotation potentiometer.
+    pub r4: R4,
+    /// The first slider.
+    pub s1: S1,
+    /// The second slider
+    pub s2: S2,
     /// The first button.
     pub b1: B1,
     /// The second button.
@@ -55,22 +55,22 @@ pub struct Board {
 }
 
 /// The pin for the first potentiometer.
-pub type P1 = PA0<Analog>;
+pub type R1 = PA0<Analog>;
 
 /// The pin for the second potentiometer.
-pub type P2 = PA1<Analog>;
+pub type R2 = PA1<Analog>;
 
 /// The pin for the third potentiometer.
-pub type P3 = PA4<Analog>;
+pub type R3 = PA4<Analog>;
 
 /// The pin for the fourth potentiometer.
-pub type P4 = PB0<Analog>;
+pub type R4 = PB0<Analog>;
 
 /// The pin for the fifth potentiometer.
-pub type P5 = PC1<Analog>;
+pub type S1 = PC1<Analog>;
 
 /// The pin for the sixth potentiometer.
-pub type P6 = PC0<Analog>;
+pub type S2 = PC0<Analog>;
 
 /// The pin for the first button.
 pub type B1 = PC2<Input<PullDown>>;
@@ -112,12 +112,12 @@ impl Board {
         let mut gpiob = dp.GPIOB.split(&mut rcc.ahb2);
         let mut gpioc = dp.GPIOC.split(&mut rcc.ahb2);
 
-        let p1 = gpioa.pa0.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
-        let p2 = gpioa.pa1.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
-        let p3 = gpioa.pa4.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
-        let p4 = gpiob.pb0.into_analog(&mut gpiob.moder, &mut gpiob.pupdr);
-        let p5 = gpioc.pc1.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
-        let p6 = gpioc.pc0.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
+        let r1 = gpioa.pa0.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
+        let r2 = gpioa.pa1.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
+        let r3 = gpioa.pa4.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
+        let r4 = gpiob.pb0.into_analog(&mut gpiob.moder, &mut gpiob.pupdr);
+        let s1 = gpioc.pc1.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
+        let s2 = gpioc.pc0.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
         let b1 = gpioc
             .pc2
             .into_pull_down_input(&mut gpioc.moder, &mut gpioc.pupdr);
@@ -165,12 +165,12 @@ impl Board {
         );
 
         Self {
-            p1,
-            p2,
-            p3,
-            p4,
-            p5,
-            p6,
+            r1,
+            r2,
+            r3,
+            r4,
+            s1,
+            s2,
             b1,
             b2,
             microphone,

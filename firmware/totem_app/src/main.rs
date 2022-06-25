@@ -25,7 +25,7 @@ use panic_probe as _;
 mod app {
     use systick_monotonic::Systick;
     use totem_board::{
-        board::{Board, P1, P2, P3, P5},
+        board::{Board, R1, R2, R3, S1},
         prelude::*,
     };
     use totem_ui::UI;
@@ -38,7 +38,7 @@ mod app {
 
     #[local]
     struct LocalResources {
-        ui: UI<P1, P2, P3, P5>,
+        ui: UI<R1, R2, R3, S1>,
     }
 
     #[init]
@@ -53,12 +53,12 @@ mod app {
         let monotonic = Systick::new(cp.SYST, 80_000_000);
 
         let Board {
-            p1,
-            p2,
-            p3,
-            p4: _,
-            p5,
-            p6: _,
+            r1,
+            r2,
+            r3,
+            r4: _,
+            s1,
+            s2: _,
             b1: _,
             b2: _,
             microphone: _,
@@ -66,7 +66,7 @@ mod app {
             led_spi: _,
         } = Board::init(dp);
 
-        let ui = UI::new(p_adc, p1, p2, p3, p5);
+        let ui = UI::new(p_adc, r1, r2, r3, s1);
 
         defmt::info!("Firmware initialised!");
 
