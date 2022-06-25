@@ -21,7 +21,7 @@ use crate::{
     adc::ADC,
     gpio::{
         Alternate, Analog, Input, PullDown, PushPull, PA0, PA1, PA4, PA5, PA6,
-        PA7, PB0, PC1, PC2, PC3,
+        PA7, PB0, PC0, PC1, PC2, PC3, PC4,
     },
     prelude::*,
     spi::Spi,
@@ -38,6 +38,10 @@ pub struct Board {
     pub p3: P3,
     /// The fourth potentiometer.
     pub p4: P4,
+    /// The fifth potentiometer.
+    pub p5: P5,
+    /// The sixth potentiometer.
+    pub p6: P6,
     /// The first button.
     pub b1: B1,
     /// The second button.
@@ -62,6 +66,12 @@ pub type P3 = PA4<Analog>;
 /// The pin for the fourth potentiometer.
 pub type P4 = PB0<Analog>;
 
+/// The pin for the fifth potentiometer.
+pub type P5 = PC1<Analog>;
+
+/// The pin for the sixth potentiometer.
+pub type P6 = PC0<Analog>;
+
 /// The pin for the first button.
 pub type B1 = PC2<Input<PullDown>>;
 
@@ -69,7 +79,7 @@ pub type B1 = PC2<Input<PullDown>>;
 pub type B2 = PC3<Input<PullDown>>;
 
 /// The pin for the sound sensor.
-pub type Microphone = PC1<Analog>;
+pub type Microphone = PC4<Analog>;
 
 /// The pin for the LED SPI clock line.
 pub type LED_SCK = PA5<Alternate<PushPull, 5>>;
@@ -106,6 +116,8 @@ impl Board {
         let p2 = gpioa.pa1.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
         let p3 = gpioa.pa4.into_analog(&mut gpioa.moder, &mut gpioa.pupdr);
         let p4 = gpiob.pb0.into_analog(&mut gpiob.moder, &mut gpiob.pupdr);
+        let p5 = gpioc.pc1.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
+        let p6 = gpioc.pc0.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
         let b1 = gpioc
             .pc2
             .into_pull_down_input(&mut gpioc.moder, &mut gpioc.pupdr);
@@ -114,7 +126,7 @@ impl Board {
             .into_pull_down_input(&mut gpioc.moder, &mut gpioc.pupdr);
 
         let microphone =
-            gpioc.pc1.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
+            gpioc.pc4.into_analog(&mut gpioc.moder, &mut gpioc.pupdr);
 
         let led_sck = gpioa.pa5.into_alternate(
             &mut gpioa.moder,
@@ -157,6 +169,8 @@ impl Board {
             p2,
             p3,
             p4,
+            p5,
+            p6,
             b1,
             b2,
             microphone,
