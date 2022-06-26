@@ -18,7 +18,7 @@
 use ws2812_spi::prerendered::Ws2812;
 
 use crate::{
-    adc::ADC,
+    adc::{Channel, ADC},
     gpio::{
         Alternate, Analog, Input, PullDown, PushPull, PA0, PA1, PA4, PA5, PA6,
         PA7, PB0, PC0, PC1, PC2, PC3, PC4,
@@ -74,3 +74,41 @@ pub type LedSpi = Spi<LED_SPI, (LED_SCK, LED_MISO, LED_MOSI)>;
 
 /// The LED strip driver.
 pub type LedStrip = Ws2812<'static, LedSpi>;
+
+/// A calibrated potentiometer.
+pub trait CalibratedPotentiometer: Channel {
+    /// The minimum value reported by the potentiometer.
+    const MIN: u16;
+    /// The maximum value reported by the potentiometer.
+    const MAX: u16;
+}
+
+impl CalibratedPotentiometer for R1 {
+    const MIN: u16 = 53;
+    const MAX: u16 = 3832;
+}
+
+impl CalibratedPotentiometer for R2 {
+    const MIN: u16 = 53;
+    const MAX: u16 = 3832;
+}
+
+impl CalibratedPotentiometer for R3 {
+    const MIN: u16 = 53;
+    const MAX: u16 = 3832;
+}
+
+impl CalibratedPotentiometer for R4 {
+    const MIN: u16 = 53;
+    const MAX: u16 = 3832;
+}
+
+impl CalibratedPotentiometer for S1 {
+    const MIN: u16 = 30;
+    const MAX: u16 = 4020;
+}
+
+impl CalibratedPotentiometer for S2 {
+    const MIN: u16 = 30;
+    const MAX: u16 = 4020;
+}
