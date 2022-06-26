@@ -25,7 +25,8 @@ use panic_probe as _;
 mod app {
     use systick_monotonic::Systick;
     use totem_board::{
-        board::{Board, R1, R2, R3, S1},
+        board::Board,
+        peripheral::{R1, R2, R3, S1},
         prelude::*,
     };
     use totem_ui::UI;

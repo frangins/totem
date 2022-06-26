@@ -31,3 +31,4 @@ pub use crate::pac::*;
 pub use cortex_m::*;
 
 pub mod board;
+pub mod peripheral;
