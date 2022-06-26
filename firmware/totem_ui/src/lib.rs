@@ -24,6 +24,7 @@
 
 use totem_board::{
     adc::{Channel, ADC},
+    peripheral::CalibratedPotentiometer,
     prelude::*,
 };
 
@@ -39,10 +40,10 @@ pub struct UI<PMode, PBrightness, PSpeed, PTemperature> {
 const ITERATIONS: u32 = 200;
 
 impl<
-        PMode: Channel,
-        PBrightness: Channel,
-        PSpeed: Channel,
-        PTemperature: Channel,
+        PMode: CalibratedPotentiometer,
+        PBrightness: CalibratedPotentiometer,
+        PSpeed: CalibratedPotentiometer,
+        PTemperature: CalibratedPotentiometer,
     > UI<PMode, PBrightness, PSpeed, PTemperature>
 {
     /// Creates a new UI.
