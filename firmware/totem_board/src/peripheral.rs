@@ -15,6 +15,8 @@
 
 //! The peripherals of the Totem board.
 
+use ws2812_spi::prerendered::Ws2812;
+
 use crate::{
     adc::ADC,
     gpio::{
@@ -69,3 +71,6 @@ pub type P_ADC = ADC;
 
 /// The SPI for driving LEDs.
 pub type LedSpi = Spi<LED_SPI, (LED_SCK, LED_MISO, LED_MOSI)>;
+
+/// The LED strip driver.
+pub type LedStrip = Ws2812<'static, LedSpi>;

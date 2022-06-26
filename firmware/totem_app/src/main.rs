@@ -26,6 +26,7 @@ mod app {
     use systick_monotonic::Systick;
     use totem_board::{
         board::Board,
+        constants::LED_BUFFER_SIZE,
         peripheral::{R1, R2, R3, S1},
         prelude::*,
     };
@@ -42,7 +43,7 @@ mod app {
         ui: UI<R1, R2, R3, S1>,
     }
 
-    #[init]
+    #[init(local = [led_buffer: [u8; LED_BUFFER_SIZE] = [0; LED_BUFFER_SIZE]])]
     fn init(
         cx: init::Context,
     ) -> (SharedResources, LocalResources, init::Monotonics) {
@@ -64,8 +65,8 @@ mod app {
             b2: _,
             microphone: _,
             p_adc,
-            led_spi: _,
-        } = Board::init(dp);
+            led_strip: _,
+        } = Board::init(dp, cx.local.led_buffer);
 
         let ui = UI::new(p_adc, r1, r2, r3, s1);
 

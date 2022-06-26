@@ -16,8 +16,9 @@
 //! The Totem board.
 
 use totem_utils::delay::AsmDelay;
+use ws2812_spi::prerendered::Ws2812;
 
-use crate::{adc::ADC, peripheral::*, prelude::*, spi::Spi};
+use crate::{adc::ADC, constants::*, peripheral::*, prelude::*, spi::Spi};
 
 /// The Totem board.
 pub struct Board {
@@ -41,13 +42,16 @@ pub struct Board {
     pub microphone: Microphone,
     /// The ADC for potentiometers.
     pub p_adc: P_ADC,
-    /// The SPI driver for the LED strip.
-    pub led_spi: LedSpi,
+    /// The LED strip driver.
+    pub led_strip: LedStrip,
 }
 
 impl Board {
     /// Initialises the board.
-    pub fn init(dp: crate::pac::Peripherals) -> Self {
+    pub fn init(
+        dp: crate::pac::Peripherals,
+        led_buffer: &'static mut [u8; LED_BUFFER_SIZE],
+    ) -> Self {
         // Clock configuration.
         let mut rcc = dp.RCC.constrain();
         let mut flash = dp.FLASH.constrain();
@@ -110,6 +114,8 @@ impl Board {
             &mut rcc.apb2,
         );
 
+        let led_strip = Ws2812::new(led_spi, led_buffer);
+
         Self {
             r1,
             r2,
@@ -121,7 +127,7 @@ impl Board {
             b2,
             microphone,
             p_adc,
-            led_spi,
+            led_strip,
         }
     }
 }
