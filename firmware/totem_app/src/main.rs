@@ -72,7 +72,7 @@ mod app {
 
         defmt::info!("Firmware initialised!");
 
-        print_value::spawn().unwrap();
+        update::spawn().unwrap();
 
         (
             SharedResources {},
@@ -89,8 +89,8 @@ mod app {
     }
 
     #[task(local = [ui])]
-    fn print_value(cx: print_value::Context) {
-        print_value::spawn_at(monotonics::now() + 10.millis()).unwrap();
+    fn update(cx: update::Context) {
+        update::spawn_at(monotonics::now() + 10.millis()).unwrap();
 
         let ui = cx.local.ui;
         let ui_state = ui.read_state();
