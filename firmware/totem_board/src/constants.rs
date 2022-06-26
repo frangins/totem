@@ -13,23 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Board support crate for Totem.
+//! Constants of the Totem board.
 
-#![no_std]
-#![allow(non_camel_case_types)]
-#![warn(clippy::redundant_pub_crate)]
-#![warn(clippy::use_self)]
-#![deny(missing_docs)]
-#![deny(unused_must_use)]
-#![forbid(unsafe_code)]
+/// The number of LEDs per strip.
+pub const LEDS_PER_STRIP: usize = 13;
 
-pub use stm32l4xx_hal as hal;
+/// The number of LED strips per side.
+pub const STRIPS_PER_SIDE: usize = 2;
 
-pub use crate::hal::prelude;
-pub use crate::hal::*;
-pub use crate::pac::*;
-pub use cortex_m::*;
+/// The total number of LEDs.
+pub const NUM_LEDS: usize = LEDS_PER_STRIP * STRIPS_PER_SIDE * 4;
 
-pub mod board;
-pub mod constants;
-pub mod peripheral;
+/// The size of the buffer for the LED driver.
+pub const LED_BUFFER_SIZE: usize = NUM_LEDS * 12 + 20;
