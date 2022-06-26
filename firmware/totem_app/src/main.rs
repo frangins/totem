@@ -93,7 +93,7 @@ mod app {
         print_value::spawn_at(monotonics::now() + 10.millis()).unwrap();
 
         let ui = cx.local.ui;
-        let value = ui.read_mode();
-        defmt::info!("Value: {}", value);
+        let ui_state = ui.read_state();
+        defmt::info!("UI State: {:?}", ui_state);
     }
 }
