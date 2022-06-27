@@ -10,10 +10,19 @@ description = "A totem for music festivals, built with love to spread love."
 cortex-m-rtic = "1.0.0"
 defmt = "0.3.0"
 defmt-rtt = "0.3.0"
+embedded-time = "0.12.1"
 panic-probe = { version = "0.3.0", features = ["print-defmt"] }
 totem_board = { path = "../totem_board" }
 totem_ui = { path = "../totem_ui" }
 systick-monotonic = "1.0.0"
+
+[dependencies.led_effects]
+git = "https://github.com/frangins/led_effects.git"
+tag = "v0.1.0"
+
+[dependencies.smart-leds]
+git = "https://github.com/legrec14/smart-leds.git"
+branch = "hsv-conversions"
 
 # For `cargo fix` to work.
 [[bin]]
