@@ -38,7 +38,7 @@ mod app {
         peripheral::{LedStrip, R1, R2, R3, S1},
         prelude::*,
     };
-    use totem_ui::UI;
+    use totem_ui::PhysicalUI;
 
     #[monotonic(binds = SysTick, default = true)]
     type Monotonic = Systick<100>;
@@ -48,7 +48,7 @@ mod app {
 
     #[local]
     struct LocalResources {
-        ui: UI<R1, R2, R3, S1>,
+        ui: PhysicalUI<R1, R2, R3, S1>,
         led_strip: LedStrip,
         time_config: TimeConfig,
         chaser: RainbowChaser<Rainbow<NUM_LEDS>, NUM_LEDS>,
@@ -81,7 +81,7 @@ mod app {
             led_strip,
         } = Board::init(dp, cx.local.led_buffer);
 
-        let ui = UI::new(p_adc, r1, r2, r3, s1);
+        let ui = PhysicalUI::new(p_adc, r1, r2, r3, s1);
 
         let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
         let chaser = RainbowChaser::new(BLUE, &time_config);
