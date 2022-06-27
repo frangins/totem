@@ -150,6 +150,27 @@ impl<
     }
 }
 
+impl Brightness {
+    /// Returns the brightness value.
+    pub fn value(&self) -> u8 {
+        self.0
+    }
+}
+
+impl Speed {
+    /// Returns the speed value.
+    pub fn value(&self) -> u8 {
+        self.0
+    }
+}
+
+impl Temperature {
+    /// Returns the temperature value.
+    pub fn value(&self) -> u8 {
+        self.0
+    }
+}
+
 fn read_mean(
     adc: &mut ADC,
     channel: &mut impl Channel,
