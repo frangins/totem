@@ -21,7 +21,7 @@ use totem_board::{
     prelude::*,
 };
 
-use crate::state::{Brightness, Mode, Speed, Temperature, UIState};
+use crate::{state::*, UI};
 
 /// The physical user interface for Totem.
 pub struct PhysicalUI<PMode, PBrightness, PSpeed, PTemperature> {
@@ -57,19 +57,16 @@ impl<
             p_temperature,
         }
     }
+}
 
-    /// Reads the current state of the UI.
-    pub fn read_state(&mut self) -> UIState {
-        UIState {
-            mode: self.read_mode(),
-            brightness: self.read_brightness(),
-            speed: self.read_speed(),
-            temperature: self.read_temperature(),
-        }
-    }
-
-    /// Reads the value of the mode potentiometer.
-    pub fn read_mode(&mut self) -> Mode {
+impl<
+        PMode: CalibratedPotentiometer,
+        PBrightness: CalibratedPotentiometer,
+        PSpeed: CalibratedPotentiometer,
+        PTemperature: CalibratedPotentiometer,
+    > UI for PhysicalUI<PMode, PBrightness, PSpeed, PTemperature>
+{
+    fn read_mode(&mut self) -> Mode {
         let value = read_mean(&mut self.p_adc, &mut self.p_mode, ITERATIONS);
 
         if value < (PMode::MAX - PMode::MIN) / 2 {
@@ -79,8 +76,7 @@ impl<
         }
     }
 
-    /// Reads the value of the brightness potentiometer.
-    pub fn read_brightness(&mut self) -> Brightness {
+    fn read_brightness(&mut self) -> Brightness {
         let value =
             read_mean(&mut self.p_adc, &mut self.p_brightness, ITERATIONS);
 
@@ -91,14 +87,12 @@ impl<
         ))
     }
 
-    /// Reads the value of the speed potentiometer.
-    pub fn read_speed(&mut self) -> Speed {
+    fn read_speed(&mut self) -> Speed {
         let value = read_mean(&mut self.p_adc, &mut self.p_speed, ITERATIONS);
         Speed(adc_to_u8_full_scale(value, PSpeed::MIN, PSpeed::MAX))
     }
 
-    /// Reads the value of the temperature potentiometer.
-    pub fn read_temperature(&mut self) -> Temperature {
+    fn read_temperature(&mut self) -> Temperature {
         let value =
             read_mean(&mut self.p_adc, &mut self.p_temperature, ITERATIONS);
 

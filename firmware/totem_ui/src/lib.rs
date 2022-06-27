@@ -26,3 +26,30 @@ pub mod physical;
 pub mod state;
 
 pub use physical::PhysicalUI;
+
+use state::{Brightness, Mode, Speed, Temperature, UIState};
+
+/// The user interface for Totem.
+pub trait UI {
+    /// Reads the current state of the UI.
+    fn read_state(&mut self) -> UIState {
+        UIState {
+            mode: self.read_mode(),
+            brightness: self.read_brightness(),
+            speed: self.read_speed(),
+            temperature: self.read_temperature(),
+        }
+    }
+
+    /// Reads the value of the mode potentiometer.
+    fn read_mode(&mut self) -> Mode;
+
+    /// Reads the value of the brightness potentiometer.
+    fn read_brightness(&mut self) -> Brightness;
+
+    /// Reads the value of the speed potentiometer.
+    fn read_speed(&mut self) -> Speed;
+
+    /// Reads the value of the temperature potentiometer.
+    fn read_temperature(&mut self) -> Temperature;
+}

@@ -38,7 +38,7 @@ mod app {
         peripheral::{LedStrip, R1, R2, R3, S1},
         prelude::*,
     };
-    use totem_ui::PhysicalUI;
+    use totem_ui::{PhysicalUI, UI};
 
     #[monotonic(binds = SysTick, default = true)]
     type Monotonic = Systick<100>;
