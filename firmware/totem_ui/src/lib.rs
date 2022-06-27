@@ -22,9 +22,11 @@
 #![deny(unused_must_use)]
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "physical")]
 pub mod physical;
 pub mod state;
 
+#[cfg(feature = "physical")]
 pub use physical::PhysicalUI;
 
 use state::{Brightness, Mode, Speed, Temperature, UIState};

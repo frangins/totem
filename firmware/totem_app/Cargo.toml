@@ -24,6 +24,10 @@ tag = "v0.1.0"
 git = "https://github.com/legrec14/smart-leds.git"
 branch = "hsv-conversions"
 
+[features]
+default = ["ui_physical"]
+ui_physical = ["totem_ui/physical"]
+
 # For `cargo fix` to work.
 [[bin]]
 name = "totem_app"
