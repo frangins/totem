@@ -13,14 +13,16 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Utilities for the Totem firmware.
+//! A fake timer for ERCP Basic.
 
-#![no_std]
-#![warn(clippy::redundant_pub_crate)]
-#![warn(clippy::use_self)]
-#![deny(missing_docs)]
-#![deny(unused_must_use)]
-#![forbid(unsafe_code)]
+/// A fake timer for ERCP Basic.
+pub struct FakeTimer;
 
-pub mod delay;
-pub mod fake_timer;
+impl ercp_basic::Timer for FakeTimer {
+    type Instant = u8;
+    type Duration = u8;
+
+    fn now(&mut self) -> Self::Instant {
+        0
+    }
+}

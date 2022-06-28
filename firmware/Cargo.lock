@@ -209,6 +209,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-crc-macros"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f1c75747a43b086df1a87fb2a889590bc0725e0abf54bba6d0c4bf7bd9e762c"
+
+[[package]]
 name = "embedded-dma"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -234,6 +240,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7a4b4d10ac48d08bfe3db7688c402baadb244721f30a77ce360bd24c3dffe58"
 dependencies = [
  "num",
+]
+
+[[package]]
+name = "ercp_basic"
+version = "0.1.0-dev"
+source = "git+https://github.com/ercp/ercp_basic.rs.git?branch=develop#2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
+dependencies = [
+ "embedded-crc-macros",
+ "heapless",
 ]
 
 [[package]]
@@ -732,6 +747,7 @@ version = "1.0.0-dev"
 dependencies = [
  "cortex-m",
  "embedded-hal",
+ "ercp_basic",
 ]
 
 [[package]]

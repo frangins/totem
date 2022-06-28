@@ -9,6 +9,10 @@ license = "GPL-3.0-only"
 cortex-m = "0.7.5"
 embedded-hal = "0.2.0"
 
+[dependencies.ercp_basic]
+git = "https://github.com/ercp/ercp_basic.rs.git"
+branch = "develop"
+
 [lib]
 test = false
 bench = false
