@@ -20,11 +20,12 @@ use ws2812_spi::prerendered::Ws2812;
 use crate::{
     adc::{Channel, ADC},
     gpio::{
-        Alternate, Analog, Input, PullDown, PushPull, PA0, PA1, PA4, PA5, PA6,
-        PA7, PB0, PC0, PC1, PC2, PC3, PC4,
+        Alternate, Analog, Input, PullDown, PushPull, PA0, PA1, PA2, PA3, PA4,
+        PA5, PA6, PA7, PB0, PC0, PC1, PC2, PC3, PC4,
     },
+    serial::Serial,
     spi::Spi,
-    SPI1,
+    SPI1, USART2,
 };
 
 /// The pin for the first potentiometer.
@@ -63,17 +64,29 @@ pub type LED_MISO = PA6<Alternate<PushPull, 5>>;
 /// The pin for the LED SPI MOSI line.
 pub type LED_MOSI = PA7<Alternate<PushPull, 5>>;
 
-/// The SPI for driving LEDs.
-pub type LED_SPI = SPI1;
+/// The ERCP Basic Tx line.
+pub type ERCP_TX = PA2<Alternate<PushPull, 7>>;
+
+/// The ERCP Basic Rx line.
+pub type ERCP_RX = PA3<Alternate<PushPull, 7>>;
 
 /// The ADC for potentiometers.
 pub type P_ADC = ADC;
+
+/// The SPI for driving LEDs.
+pub type LED_SPI = SPI1;
+
+/// The UART for ERCP Basic.
+pub type ERCP_UART = USART2;
 
 /// The SPI for driving LEDs.
 pub type LedSpi = Spi<LED_SPI, (LED_SCK, LED_MISO, LED_MOSI)>;
 
 /// The LED strip driver.
 pub type LedStrip = Ws2812<'static, LedSpi>;
+
+/// The serial for ERCP Basic.
+pub type ErcpSerial = Serial<ERCP_UART, (ERCP_TX, ERCP_RX)>;
 
 /// A calibrated potentiometer.
 pub trait CalibratedPotentiometer: Channel {

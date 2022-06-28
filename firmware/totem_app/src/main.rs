@@ -100,6 +100,7 @@ mod app {
             microphone: _,
             p_adc,
             led_strip,
+            ercp_serial: _,
         } = Board::init(dp, cx.local.led_buffer);
 
         ////////////////////////////////////////////////////////////////////////
