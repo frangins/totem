@@ -24,6 +24,7 @@ use panic_probe as _;
 #[rtic::app(device = totem_board::pac, dispatchers = [TIM2])]
 mod app {
     use embedded_time::{duration::Seconds, rate::Hertz};
+    use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
         chaser::{OneParameterChaser, RainbowChaser},
         sequence::Rainbow,
@@ -32,13 +33,15 @@ mod app {
     use smart_leds::{brightness, colors::BLUE, SmartLedsWrite};
     use systick_monotonic::Systick;
 
+    use totem_app::ercp::TotemRouter;
     use totem_board::{
         board::Board,
         constants::{LED_BUFFER_SIZE, NUM_LEDS},
-        peripheral::{LedStrip, R1, R2, R3, S1},
+        peripheral::{ErcpSerial, LedStrip, R1, R2, R3, S1},
         prelude::*,
     };
     use totem_ui::{PhysicalUI, UI};
+    use totem_utils::fake_timer::FakeTimer;
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Resource types                             //
@@ -48,7 +51,9 @@ mod app {
     type Monotonic = Systick<100>;
 
     #[shared]
-    struct SharedResources {}
+    struct SharedResources {
+        ercp: ErcpBasic<SerialAdapter<ErcpSerial>, FakeTimer, TotemRouter>,
+    }
 
     #[local]
     struct LocalResources {
@@ -100,7 +105,7 @@ mod app {
             microphone: _,
             p_adc,
             led_strip,
-            ercp_serial: _,
+            ercp_serial,
         } = Board::init(dp, cx.local.led_buffer);
 
         ////////////////////////////////////////////////////////////////////////
@@ -112,6 +117,9 @@ mod app {
         let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
         let chaser = RainbowChaser::new(BLUE, &time_config);
 
+        let adapter = SerialAdapter::new(ercp_serial);
+        let ercp = ErcpBasic::new(adapter, FakeTimer, TotemRouter);
+
         defmt::info!("Firmware initialised!");
 
         ////////////////////////////////////////////////////////////////////////
@@ -121,7 +129,7 @@ mod app {
         update::spawn().unwrap();
 
         (
-            SharedResources {},
+            SharedResources { ercp },
             LocalResources {
                 ui,
                 led_strip,
@@ -167,5 +175,25 @@ mod app {
                 .write(brightness(sequence, ui_state.brightness.value()))
                 .unwrap();
         }
+    }
+
+    #[task(binds = USART2, shared = [ercp])]
+    fn usart2(mut cx: usart2::Context) {
+        defmt::trace!("Receiving data on UART");
+
+        cx.shared.ercp.lock(|ercp| {
+            ercp.handle_data().ok();
+
+            if ercp.complete_frame_received() {
+                defmt::trace!("Complete frame received!");
+                ercp_process::spawn().ok();
+            }
+        });
+    }
+
+    #[task(shared = [ercp])]
+    fn ercp_process(mut cx: ercp_process::Context) {
+        defmt::debug!("ERCP frame received. Processing it…");
+        cx.shared.ercp.lock(|ercp| ercp.process(&mut ()).ok());
     }
 }

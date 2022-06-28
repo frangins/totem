@@ -14,7 +14,13 @@ embedded-time = "0.12.1"
 panic-probe = { version = "0.3.0", features = ["print-defmt"] }
 totem_board = { path = "../totem_board" }
 totem_ui = { path = "../totem_ui" }
+totem_utils = { path = "../totem_utils" }
 systick-monotonic = "1.0.0"
+
+[dependencies.ercp_basic]
+git = "https://github.com/ercp/ercp_basic.rs.git"
+branch = "develop"
+features = ["serial"]
 
 [dependencies.led_effects]
 git = "https://github.com/frangins/led_effects.git"
@@ -31,5 +37,9 @@ ui_physical = ["totem_ui/physical"]
 # For `cargo fix` to work.
 [[bin]]
 name = "totem_app"
+test = false
+bench = false
+
+[lib]
 test = false
 bench = false

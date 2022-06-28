@@ -248,7 +248,9 @@ version = "0.1.0-dev"
 source = "git+https://github.com/ercp/ercp_basic.rs.git?branch=develop#2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
 dependencies = [
  "embedded-crc-macros",
+ "embedded-hal",
  "heapless",
+ "nb 1.0.0",
 ]
 
 [[package]]
@@ -715,12 +717,14 @@ dependencies = [
  "defmt",
  "defmt-rtt",
  "embedded-time",
+ "ercp_basic",
  "led_effects",
  "panic-probe",
  "smart-leds",
  "systick-monotonic",
  "totem_board",
  "totem_ui",
+ "totem_utils",
 ]
 
 [[package]]
