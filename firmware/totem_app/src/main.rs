@@ -57,12 +57,12 @@ mod app {
 
     #[shared]
     struct SharedResources {
+        ui: UI,
         ercp: ErcpBasic<SerialAdapter<ErcpSerial>, FakeTimer, TotemRouter>,
     }
 
     #[local]
     struct LocalResources {
-        ui: UI,
         led_strip: LedStrip,
         time_config: TimeConfig,
         chaser: RainbowChaser<Rainbow<NUM_LEDS>, NUM_LEDS>,
@@ -139,9 +139,8 @@ mod app {
         update::spawn().unwrap();
 
         (
-            SharedResources { ercp },
+            SharedResources { ui, ercp },
             LocalResources {
-                ui,
                 led_strip,
                 time_config,
                 chaser,
@@ -165,16 +164,15 @@ mod app {
     //                                 Tasks                                  //
     ////////////////////////////////////////////////////////////////////////////
 
-    #[task(local = [ui, led_strip, time_config, chaser])]
-    fn update(cx: update::Context) {
+    #[task(local = [led_strip, time_config, chaser], shared = [ui])]
+    fn update(mut cx: update::Context) {
         let update::LocalResources {
-            ui,
             led_strip,
             time_config,
             chaser,
         } = cx.local;
 
-        let ui_state = ui.read_state();
+        let ui_state = cx.shared.ui.lock(|ui| ui.read_state());
         defmt::debug!("UI State: {:?}", ui_state);
 
         let period = (1000 / time_config.refresh_rate.0).millis();
