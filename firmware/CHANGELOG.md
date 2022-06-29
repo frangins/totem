@@ -12,4 +12,4 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 * Initial version.
 
-[Unreleased]: https://github.com/frangins/totem_app/compare/main...develop
+[Unreleased]: https://github.com/frangins/totem/compare/main...develop
