@@ -33,6 +33,7 @@ branch = "hsv-conversions"
 [features]
 default = ["ui_physical"]
 ui_physical = ["totem_ui/physical"]
+ui_graphical = ["totem_ui/graphical"]
 
 # For `cargo fix` to work.
 [[bin]]

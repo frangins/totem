@@ -18,6 +18,12 @@
 #![deny(unused_must_use)]
 #![forbid(unsafe_code)]
 
+#[cfg(not(any(feature = "ui_physical", feature = "ui_graphical")))]
+compile_error!("You must select a UI.");
+
+#[cfg(all(feature = "ui_physical", feature = "ui_graphical"))]
+compile_error!("You must select only one UI.");
+
 use defmt_rtt as _;
 use panic_probe as _;
 
@@ -33,7 +39,7 @@ mod app {
     use smart_leds::{brightness, colors::BLUE, SmartLedsWrite};
     use systick_monotonic::Systick;
 
-    use totem_app::ercp::TotemRouter;
+    use totem_app::ercp::{ErcpContext, TotemRouter};
     use totem_board::{
         board::Board,
         constants::{LED_BUFFER_SIZE, NUM_LEDS},
@@ -42,6 +48,9 @@ mod app {
     };
     use totem_ui::UI as _;
     use totem_utils::fake_timer::FakeTimer;
+
+    #[cfg(feature = "ui_graphical")]
+    use totem_ui::GraphicalUI;
 
     #[cfg(feature = "ui_physical")]
     use totem_board::peripheral::{R1, R2, R3, S1};
@@ -70,6 +79,8 @@ mod app {
 
     #[cfg(feature = "ui_physical")]
     type UI = PhysicalUI<R1, R2, R3, S1>;
+    #[cfg(feature = "ui_graphical")]
+    type UI = GraphicalUI;
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Configuration                              //
@@ -123,6 +134,8 @@ mod app {
 
         #[cfg(feature = "ui_physical")]
         let ui = PhysicalUI::new(p_adc, r1, r2, r3, s1);
+        #[cfg(feature = "ui_graphical")]
+        let ui = GraphicalUI::new();
 
         let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
         let chaser = RainbowChaser::new(BLUE, &time_config);
@@ -199,9 +212,17 @@ mod app {
         });
     }
 
-    #[task(shared = [ercp])]
-    fn ercp_process(mut cx: ercp_process::Context) {
+    #[task(shared = [ui, ercp])]
+    fn ercp_process(cx: ercp_process::Context) {
         defmt::debug!("ERCP frame received. Processing it…");
-        cx.shared.ercp.lock(|ercp| ercp.process(&mut ()).ok());
+
+        #[allow(unused)]
+        let ercp_process::SharedResources { mut ui, mut ercp } = cx.shared;
+
+        let mut context = ErcpContext::default();
+        ercp.lock(|ercp| ercp.process(&mut context).ok());
+
+        #[cfg(feature = "ui_graphical")]
+        ui.lock(|ui| ui.set_state(context.ui_state));
     }
 }
