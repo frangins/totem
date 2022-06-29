@@ -9,8 +9,14 @@ license = "GPL-3.0-only"
 defmt = "0.3.0"
 totem_board = { path = "../totem_board", optional = true }
 
+[dependencies.ercp_basic]
+git = "https://github.com/ercp/ercp_basic.rs.git"
+branch = "develop"
+optional = true
+
 [features]
 physical = ["totem_board"]
+graphical = ["ercp_basic"]
 
 [lib]
 test = false

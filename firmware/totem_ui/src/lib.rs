@@ -22,10 +22,14 @@
 #![deny(unused_must_use)]
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "graphical")]
+pub mod graphical;
 #[cfg(feature = "physical")]
 pub mod physical;
 pub mod state;
 
+#[cfg(feature = "graphical")]
+pub use graphical::GraphicalUI;
 #[cfg(feature = "physical")]
 pub use physical::PhysicalUI;
 
