@@ -37,11 +37,16 @@ mod app {
     use totem_board::{
         board::Board,
         constants::{LED_BUFFER_SIZE, NUM_LEDS},
-        peripheral::{ErcpSerial, LedStrip, R1, R2, R3, S1},
+        peripheral::{ErcpSerial, LedStrip},
         prelude::*,
     };
-    use totem_ui::{PhysicalUI, UI};
+    use totem_ui::UI as _;
     use totem_utils::fake_timer::FakeTimer;
+
+    #[cfg(feature = "ui_physical")]
+    use totem_board::peripheral::{R1, R2, R3, S1};
+    #[cfg(feature = "ui_physical")]
+    use totem_ui::PhysicalUI;
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Resource types                             //
@@ -57,11 +62,14 @@ mod app {
 
     #[local]
     struct LocalResources {
-        ui: PhysicalUI<R1, R2, R3, S1>,
+        ui: UI,
         led_strip: LedStrip,
         time_config: TimeConfig,
         chaser: RainbowChaser<Rainbow<NUM_LEDS>, NUM_LEDS>,
     }
+
+    #[cfg(feature = "ui_physical")]
+    type UI = PhysicalUI<R1, R2, R3, S1>;
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Configuration                              //
@@ -93,16 +101,17 @@ mod app {
         //                            Board init                              //
         ////////////////////////////////////////////////////////////////////////
 
+        #[allow(unused)]
         let Board {
             r1,
             r2,
             r3,
-            r4: _,
+            r4,
             s1,
-            s2: _,
-            b1: _,
-            b2: _,
-            microphone: _,
+            s2,
+            b1,
+            b2,
+            microphone,
             p_adc,
             led_strip,
             ercp_serial,
@@ -112,6 +121,7 @@ mod app {
         //                          Resources init                            //
         ////////////////////////////////////////////////////////////////////////
 
+        #[cfg(feature = "ui_physical")]
         let ui = PhysicalUI::new(p_adc, r1, r2, r3, s1);
 
         let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
