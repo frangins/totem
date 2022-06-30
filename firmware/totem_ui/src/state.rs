@@ -18,7 +18,7 @@
 use defmt::Format;
 
 /// The state of the user interface.
-#[derive(Format, Default, Clone)]
+#[derive(Debug, Format, Default, Clone)]
 pub struct UIState {
     /// The mode.
     pub mode: Mode,
@@ -31,7 +31,7 @@ pub struct UIState {
 }
 
 /// The mode.
-#[derive(Format, Clone, Copy)]
+#[derive(Debug, Format, Clone, Copy, PartialEq, Eq)]
 pub enum Mode {
     /// The first mode.
     First,
@@ -40,15 +40,21 @@ pub enum Mode {
 }
 
 /// The brightness of the LED strip.
-#[derive(Format, Default, Clone, Copy)]
+#[derive(
+    Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
+)]
 pub struct Brightness(pub(crate) u8);
 
 /// The speed of transitions.
-#[derive(Format, Default, Clone, Copy)]
+#[derive(
+    Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
+)]
 pub struct Speed(pub(crate) u8);
 
 /// The color temperature.
-#[derive(Format, Default, Clone, Copy)]
+#[derive(
+    Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
+)]
 pub struct Temperature(pub(crate) u8);
 
 impl Default for Mode {
