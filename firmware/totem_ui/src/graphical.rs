@@ -69,26 +69,10 @@ pub fn ui_update<'a>(
         return Some(nack!(nack_reason::INVALID_ARGUMENTS));
     }
 
-    if command.length() != 4 {
-        return Some(nack!(nack_reason::INVALID_ARGUMENTS));
+    if let Ok(ui_state) = postcard::from_bytes(command.value()) {
+        *ui_state_update = Some(ui_state);
+        Some(ack!())
+    } else {
+        Some(nack!(nack_reason::INVALID_ARGUMENTS))
     }
-
-    let mode = match command.value()[0] {
-        0 => Mode::First,
-        1 => Mode::Second,
-        _ => return Some(nack!(nack_reason::INVALID_ARGUMENTS)),
-    };
-
-    let brightness = Brightness(command.value()[1]);
-    let speed = Speed(command.value()[2]);
-    let temperature = Temperature(command.value()[3]);
-
-    *ui_state_update = Some(UIState {
-        mode,
-        brightness,
-        speed,
-        temperature,
-    });
-
-    Some(ack!())
 }

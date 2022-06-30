@@ -16,9 +16,12 @@
 //! Types modeling the state of the Totem UI.
 
 use defmt::Format;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
 
 /// The state of the user interface.
 #[derive(Debug, Format, Default, Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct UIState {
     /// The mode.
     pub mode: Mode,
@@ -32,6 +35,7 @@ pub struct UIState {
 
 /// The mode.
 #[derive(Debug, Format, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum Mode {
     /// The first mode.
     First,
@@ -43,18 +47,21 @@ pub enum Mode {
 #[derive(
     Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
 )]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Brightness(pub(crate) u8);
 
 /// The speed of transitions.
 #[derive(
     Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
 )]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Speed(pub(crate) u8);
 
 /// The color temperature.
 #[derive(
     Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
 )]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Temperature(pub(crate) u8);
 
 impl Default for Mode {

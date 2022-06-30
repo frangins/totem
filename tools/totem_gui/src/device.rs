@@ -18,10 +18,7 @@
 use std::time::Duration;
 
 use ercp_device::{CustomCommandError, Device};
-use totem_ui::{
-    graphical::UI_UPDATE,
-    state::{Mode, UIState},
-};
+use totem_ui::{graphical::UI_UPDATE, state::UIState};
 
 /// The timeout when communication with the Totem.
 pub const TIMEOUT: Option<Duration> = Some(Duration::from_millis(100));
@@ -34,20 +31,8 @@ pub trait DeviceExt {
 
 impl DeviceExt for Device {
     fn ui_update(&mut self, state: &UIState) -> Result<(), CustomCommandError> {
-        let mode = match state.mode {
-            Mode::First => 0,
-            Mode::Second => 1,
-        };
-
-        let value = [
-            mode,
-            state.brightness.value(),
-            state.speed.value(),
-            state.temperature.value(),
-        ];
-
+        let value = postcard::to_allocvec(state).unwrap();
         self.command(UI_UPDATE, &value, TIMEOUT)?;
-
         Ok(())
     }
 }
