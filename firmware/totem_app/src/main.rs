@@ -29,6 +29,8 @@ use panic_probe as _;
 
 #[rtic::app(device = totem_board::pac, dispatchers = [TIM2, TIM3])]
 mod app {
+    use systick_monotonic::Systick;
+
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
@@ -37,7 +39,6 @@ mod app {
         time::TimeConfig,
     };
     use smart_leds::{brightness, colors::BLUE, SmartLedsWrite};
-    use systick_monotonic::Systick;
 
     use totem_app::ercp::{ErcpContext, TotemRouter};
     use totem_board::{
