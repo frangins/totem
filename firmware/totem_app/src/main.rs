@@ -27,7 +27,7 @@ compile_error!("You must select only one UI.");
 use defmt_rtt as _;
 use panic_probe as _;
 
-#[rtic::app(device = totem_board::pac, dispatchers = [TIM2])]
+#[rtic::app(device = totem_board::pac, dispatchers = [TIM2, TIM3])]
 mod app {
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
@@ -177,7 +177,7 @@ mod app {
     //                                 Tasks                                  //
     ////////////////////////////////////////////////////////////////////////////
 
-    #[task(local = [led_strip, time_config, chaser], shared = [ui])]
+    #[task(priority = 2, local = [led_strip, time_config, chaser], shared = [ui])]
     fn update(mut cx: update::Context) {
         let update::LocalResources {
             led_strip,
@@ -198,7 +198,7 @@ mod app {
         }
     }
 
-    #[task(binds = USART2, shared = [ercp])]
+    #[task(priority = 3, binds = USART2, shared = [ercp])]
     fn usart2(mut cx: usart2::Context) {
         defmt::trace!("Receiving data on UART");
 
@@ -212,7 +212,7 @@ mod app {
         });
     }
 
-    #[task(shared = [ui, ercp])]
+    #[task(priority = 1, shared = [ui, ercp])]
     fn ercp_process(cx: ercp_process::Context) {
         defmt::debug!("ERCP frame received. Processing it…");
 
