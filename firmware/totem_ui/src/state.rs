@@ -58,6 +58,11 @@ impl Default for Mode {
 }
 
 impl Brightness {
+    /// Creates a new brightness.
+    pub fn new(value: u8) -> Self {
+        Self(value)
+    }
+
     /// Returns the brightness value.
     pub fn value(&self) -> u8 {
         self.0
@@ -65,6 +70,11 @@ impl Brightness {
 }
 
 impl Speed {
+    /// Creates a new speed.
+    pub fn new(value: u8) -> Self {
+        Self(value)
+    }
+
     /// Returns the speed value.
     pub fn value(&self) -> u8 {
         self.0
@@ -72,6 +82,11 @@ impl Speed {
 }
 
 impl Temperature {
+    /// Creates a new temperature.
+    pub fn new(value: u8) -> Self {
+        Self(value)
+    }
+
     /// Returns the temperature value.
     pub fn value(&self) -> u8 {
         self.0
