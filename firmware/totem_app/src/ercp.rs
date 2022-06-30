@@ -24,8 +24,8 @@ use totem_ui::state::UIState;
 #[derive(Default)]
 pub struct ErcpContext {
     #[cfg(feature = "ui_graphical")]
-    /// The graphical UI state.
-    pub ui_state: UIState,
+    /// The optional graphical UI state update.
+    pub ui_state_update: Option<UIState>,
 }
 
 /// The ERCP Basic router for Totem.
@@ -41,9 +41,10 @@ impl Router for TotemRouter {
     ) -> Option<ercp_basic::Command> {
         match command.code() {
             #[cfg(feature = "ui_graphical")]
-            totem_ui::graphical::UI_UPDATE => {
-                totem_ui::graphical::ui_update(command, &mut ctx.ui_state)
-            }
+            totem_ui::graphical::UI_UPDATE => totem_ui::graphical::ui_update(
+                command,
+                &mut ctx.ui_state_update,
+            ),
 
             _ => self.default_routes(command),
         }

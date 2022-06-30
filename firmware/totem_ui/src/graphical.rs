@@ -63,7 +63,7 @@ impl UI for GraphicalUI {
 /// Handles UI_Update commands.
 pub fn ui_update<'a>(
     command: Command,
-    ui_state: &mut UIState,
+    ui_state_update: &mut Option<UIState>,
 ) -> Option<Command<'a>> {
     if command.code() != UI_UPDATE {
         return Some(nack!(nack_reason::INVALID_ARGUMENTS));
@@ -83,12 +83,12 @@ pub fn ui_update<'a>(
     let speed = Speed(command.value()[2]);
     let temperature = Temperature(command.value()[3]);
 
-    *ui_state = UIState {
+    *ui_state_update = Some(UIState {
         mode,
         brightness,
         speed,
         temperature,
-    };
+    });
 
     Some(ack!())
 }

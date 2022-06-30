@@ -223,6 +223,8 @@ mod app {
         ercp.lock(|ercp| ercp.process(&mut context).ok());
 
         #[cfg(feature = "ui_graphical")]
-        ui.lock(|ui| ui.set_state(context.ui_state));
+        if let Some(state) = context.ui_state_update {
+            ui.lock(|ui| ui.set_state(state));
+        }
     }
 }
