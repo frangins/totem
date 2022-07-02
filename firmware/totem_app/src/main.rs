@@ -40,7 +40,10 @@ mod app {
     use rand::distributions::Uniform;
     use smart_leds::{brightness, SmartLedsWrite};
 
-    use totem_app::ercp::{ErcpContext, TotemRouter};
+    use totem_app::{
+        ercp::{ErcpContext, TotemRouter},
+        led_strip::LedStripExt,
+    };
     use totem_board::{
         board::Board,
         constants::{LED_BUFFER_SIZE, NUM_LEDS},
@@ -125,9 +128,11 @@ mod app {
             b2,
             microphone,
             p_adc,
-            led_strip,
+            mut led_strip,
             ercp_serial,
         } = Board::init(dp, cx.local.led_buffer);
+
+        led_strip.off();
 
         ////////////////////////////////////////////////////////////////////////
         //                          Resources init                            //
