@@ -37,10 +37,15 @@ pub struct UIState {
 #[derive(Debug, Format, Clone, Copy, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub enum Mode {
-    /// The first mode.
-    First,
-    /// The second mode.
-    Second,
+    /// The off mode.
+    ///
+    /// The Totem is off, only checking UI updates.
+    Off,
+
+    /// The random unicolor mode.
+    ///
+    /// All LEDs are following the same random color progression.
+    RandomUnicolor,
 }
 
 /// The brightness of the LED strip.
@@ -66,7 +71,7 @@ pub struct Temperature(pub(crate) u8);
 
 impl Default for Mode {
     fn default() -> Self {
-        Self::First
+        Self::Off
     }
 }
 

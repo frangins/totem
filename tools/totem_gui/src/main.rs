@@ -199,21 +199,21 @@ impl Widgets<AppModel, ()> for AppWidgets {
                         set_orientation: Horizontal,
 
                         append: mode_selector = &gtk::CheckButton {
-                            set_label: Some("First"),
+                            set_label: Some("Off"),
                             set_active: true,
                             connect_toggled(sender) => move |button| {
                                 if button.is_active() {
-                                    send!(sender, AppMsg::UpdateMode(Mode::First));
+                                    send!(sender, AppMsg::UpdateMode(Mode::Off));
                                 }
                             },
                         },
 
                         append = &gtk::CheckButton {
-                            set_label: Some("Second"),
+                            set_label: Some("Random unicolor"),
                             set_group: Some(&mode_selector),
                             connect_toggled(sender) => move |button| {
                                 if button.is_active() {
-                                    send!(sender, AppMsg::UpdateMode(Mode::Second));
+                                    send!(sender, AppMsg::UpdateMode(Mode::RandomUnicolor));
                                 }
                             },
                         },

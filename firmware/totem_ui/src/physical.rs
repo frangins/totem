@@ -70,9 +70,9 @@ impl<
         let value = read_mean(&mut self.p_adc, &mut self.p_mode, ITERATIONS);
 
         if value < (PMode::MAX - PMode::MIN) / 2 {
-            Mode::First
+            Mode::Off
         } else {
-            Mode::Second
+            Mode::RandomUnicolor
         }
     }
 
