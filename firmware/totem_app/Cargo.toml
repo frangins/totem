@@ -25,6 +25,12 @@ features = ["serial"]
 [dependencies.led_effects]
 git = "https://github.com/frangins/led_effects.git"
 tag = "v0.1.0"
+features = ["rand"]
+
+[dependencies.rand]
+version = "0.8.4"
+default-features = false
+features = ["small_rng"]
 
 [dependencies.smart-leds]
 git = "https://github.com/legrec14/smart-leds.git"

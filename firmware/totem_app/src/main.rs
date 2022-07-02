@@ -34,11 +34,11 @@ mod app {
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
-        chaser::{OneParameterChaser, RainbowChaser},
-        sequence::Rainbow,
+        chaser::{RandomUnicolor, SimpleRandomChaser},
         time::TimeConfig,
     };
-    use smart_leds::{brightness, colors::BLUE, SmartLedsWrite};
+    use rand::distributions::Uniform;
+    use smart_leds::{brightness, SmartLedsWrite};
 
     use totem_app::ercp::{ErcpContext, TotemRouter};
     use totem_board::{
@@ -75,7 +75,7 @@ mod app {
     struct LocalResources {
         led_strip: LedStrip,
         time_config: TimeConfig,
-        chaser: RainbowChaser<Rainbow<NUM_LEDS>, NUM_LEDS>,
+        chaser: RandomUnicolor<Uniform<u32>, NUM_LEDS>,
     }
 
     #[cfg(feature = "ui_physical")]
@@ -139,7 +139,8 @@ mod app {
         let ui = GraphicalUI::new();
 
         let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
-        let chaser = RainbowChaser::new(BLUE, &time_config);
+        let chaser =
+            RandomUnicolor::new(REFRESH_RATE, Uniform::new(300, 5_000));
 
         let adapter = SerialAdapter::new(ercp_serial);
         let ercp = ErcpBasic::new(adapter, FakeTimer, TotemRouter);

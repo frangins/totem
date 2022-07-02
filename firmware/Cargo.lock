@@ -328,6 +328,7 @@ version = "0.1.0"
 source = "git+https://github.com/frangins/led_effects.git?tag=v0.1.0#7cacd917a4c3e806e5db7c9c38ebf00c4651f3a8"
 dependencies = [
  "embedded-time",
+ "rand",
  "smart-leds",
 ]
 
@@ -507,6 +508,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a1feb54ed693b93a84e14094943b84b7c4eae204c512b7ccb95ab0c66d278ad1"
 dependencies = [
  "proc-macro2",
+]
+
+[[package]]
+name = "rand"
+version = "0.8.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
+dependencies = [
+ "rand_core",
 ]
 
 [[package]]
@@ -758,6 +768,7 @@ dependencies = [
  "ercp_basic",
  "led_effects",
  "panic-probe",
+ "rand",
  "smart-leds",
  "systick-monotonic",
  "totem_board",
