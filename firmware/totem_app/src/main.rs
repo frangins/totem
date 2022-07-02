@@ -24,8 +24,12 @@ compile_error!("You must select a UI.");
 #[cfg(all(feature = "ui_physical", feature = "ui_graphical"))]
 compile_error!("You must select only one UI.");
 
-use defmt_rtt as _;
+#[cfg(feature = "panic-probe")]
 use panic_probe as _;
+#[cfg(not(feature = "panic-probe"))]
+use panic_reset as _;
+
+use defmt_rtt as _;
 
 #[rtic::app(device = totem_board::pac, dispatchers = [TIM2, TIM3])]
 mod app {
