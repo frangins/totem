@@ -15,6 +15,8 @@
 
 //! The physical user interface for Totem.
 
+use core::ops::Range;
+
 use totem_board::{
     adc::{Channel, ADC},
     peripheral::CalibratedPotentiometer,
@@ -80,27 +82,32 @@ impl<
         let value =
             read_mean(&mut self.p_adc, &mut self.p_brightness, ITERATIONS);
 
-        Brightness(adc_to_u8_full_scale(
+        Brightness(adc_to_range(
             value,
-            PBrightness::MIN,
-            PBrightness::MAX,
-        ))
+            PBrightness::MIN..PBrightness::MAX,
+            (Brightness::MIN.into())..(Brightness::MAX.into()),
+        ) as u8)
     }
 
     fn read_speed(&mut self) -> Speed {
         let value = read_mean(&mut self.p_adc, &mut self.p_speed, ITERATIONS);
-        Speed(adc_to_u8_full_scale(value, PSpeed::MIN, PSpeed::MAX))
+
+        Speed(adc_to_range(
+            value,
+            PSpeed::MIN..PSpeed::MAX,
+            (Speed::MIN.into())..(Speed::MAX.into()),
+        ) as u8)
     }
 
     fn read_temperature(&mut self) -> Temperature {
         let value =
             read_mean(&mut self.p_adc, &mut self.p_temperature, ITERATIONS);
 
-        Temperature(adc_to_u8_full_scale(
+        Temperature(adc_to_range(
             value,
-            PTemperature::MIN,
-            PTemperature::MAX,
-        ))
+            PTemperature::MIN..PTemperature::MAX,
+            (Temperature::MIN.into())..(Temperature::MAX.into()),
+        ) as u8)
     }
 }
 
@@ -114,9 +121,30 @@ fn read_mean(
         / iterations as u32) as u16
 }
 
-fn adc_to_u8_full_scale(value: u16, min_value: u16, max_value: u16) -> u8 {
-    let scale = (max_value - min_value) / u8::MAX as u16;
-    (value.saturating_sub(min_value) / scale)
-        .try_into()
-        .unwrap_or(u8::MAX)
+fn adc_to_range(
+    adc_value: u16,
+    adc_range: Range<u16>,
+    output_range: Range<u32>,
+) -> u32 {
+    let adc_dynamic = adc_range.len() as u32;
+    let output_dynamic = output_range.len() as u32;
+
+    // Value in 0..adc_dynamic.
+    let base_value = adc_value.saturating_sub(adc_range.start) as u32;
+
+    // Value in 0..output_dynamic.
+    let scaled_value = if adc_dynamic >= output_dynamic {
+        let scale = adc_dynamic / output_dynamic;
+        base_value / scale
+    } else {
+        // As the scaling is truncated, it can be insufficient to achieve the
+        // maximum value. Hence let’s add 1.
+        let scale = output_dynamic / adc_dynamic + 1;
+        base_value.saturating_mul(scale)
+    };
+
+    // Value in output_range.
+    scaled_value
+        .saturating_add(output_range.start)
+        .min(output_range.end)
 }

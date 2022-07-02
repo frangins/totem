@@ -76,6 +76,11 @@ impl Default for Mode {
 }
 
 impl Brightness {
+    /// The minimum brightness value.
+    pub const MIN: u8 = 0;
+    /// The maximum brightness value.
+    pub const MAX: u8 = u8::MAX;
+
     /// Creates a new brightness.
     pub fn new(value: u8) -> Self {
         Self(value)
@@ -88,6 +93,11 @@ impl Brightness {
 }
 
 impl Speed {
+    /// The minimum speed value.
+    pub const MIN: u8 = 0;
+    /// The maximum speed value.
+    pub const MAX: u8 = u8::MAX;
+
     /// Creates a new speed.
     pub fn new(value: u8) -> Self {
         Self(value)
@@ -100,6 +110,11 @@ impl Speed {
 }
 
 impl Temperature {
+    /// The minimum temperature value.
+    pub const MIN: u8 = 0;
+    /// The maximum temperature value.
+    pub const MAX: u8 = u8::MAX;
+
     /// Creates a new temperature.
     pub fn new(value: u8) -> Self {
         Self(value)
