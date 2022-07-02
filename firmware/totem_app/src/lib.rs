@@ -22,5 +22,6 @@
 #![deny(unused_must_use)]
 #![forbid(unsafe_code)]
 
+pub mod chaser;
 pub mod ercp;
 pub mod led_strip;
