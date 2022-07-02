@@ -13,14 +13,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! The application firmware for Totem.
+//! LED strip utilities.
 
-#![no_std]
-#![warn(clippy::redundant_pub_crate)]
-#![warn(clippy::use_self)]
-#![deny(missing_docs)]
-#![deny(unused_must_use)]
-#![forbid(unsafe_code)]
+use smart_leds::{colors::BLACK, SmartLedsWrite};
 
-pub mod ercp;
-pub mod led_strip;
+use totem_board::{constants::NUM_LEDS, peripheral::LedStrip};
+
+/// LED strip extension trait.
+pub trait LedStripExt {
+    /// Switches off the LED strip.
+    fn off(&mut self);
+}
+
+impl LedStripExt for LedStrip {
+    fn off(&mut self) {
+        self.write([BLACK; NUM_LEDS].into_iter()).unwrap();
+    }
+}
