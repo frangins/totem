@@ -38,7 +38,7 @@ mod app {
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
-        chaser::{RandomUnicolor, SimpleRandomChaser},
+        chaser::{Chaser as _, RandomUnicolor, SimpleRandomChaser},
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
@@ -221,6 +221,9 @@ mod app {
                 }
             }
         }
+
+        time_config.transition_time = ui_state.speed.transition_time();
+        chaser.set_time_config(time_config);
 
         if let Some(sequence) = chaser.next() {
             led_strip
