@@ -246,6 +246,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7a4b4d10ac48d08bfe3db7688c402baadb244721f30a77ce360bd24c3dffe58"
 dependencies = [
  "num",
+ "serde",
 ]
 
 [[package]]
@@ -801,6 +802,7 @@ name = "totem_ui"
 version = "1.0.0-dev"
 dependencies = [
  "defmt",
+ "embedded-time",
  "ercp_basic",
  "postcard",
  "serde",

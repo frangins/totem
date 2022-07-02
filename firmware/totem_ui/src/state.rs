@@ -15,7 +15,8 @@
 
 //! Types modeling the state of the Totem UI.
 
-use defmt::Format;
+use defmt::{write, Format};
+use embedded_time::duration::{Generic, Milliseconds};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -56,11 +57,9 @@ pub enum Mode {
 pub struct Brightness(pub(crate) u8);
 
 /// The speed of transitions.
-#[derive(
-    Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Speed(pub(crate) u8);
+pub struct Speed(pub(crate) Milliseconds);
 
 /// The color temperature.
 #[derive(
@@ -72,6 +71,18 @@ pub struct Temperature(pub(crate) u8);
 impl Default for Mode {
     fn default() -> Self {
         Self::Off
+    }
+}
+
+impl Default for Speed {
+    fn default() -> Self {
+        Self(Milliseconds(Self::MIN))
+    }
+}
+
+impl Format for Speed {
+    fn format(&self, fmt: defmt::Formatter) {
+        write!(fmt, "Speed(duration = {} ms)", self.0 .0);
     }
 }
 
@@ -93,19 +104,19 @@ impl Brightness {
 }
 
 impl Speed {
-    /// The minimum speed value.
-    pub const MIN: u8 = 0;
-    /// The maximum speed value.
-    pub const MAX: u8 = u8::MAX;
+    /// The minimum transition time.
+    pub const MIN: u32 = 100;
+    /// The maximum transition time.
+    pub const MAX: u32 = 13_000;
 
     /// Creates a new speed.
-    pub fn new(value: u8) -> Self {
-        Self(value)
+    pub fn new(transition_time: Milliseconds) -> Self {
+        Self(transition_time)
     }
 
-    /// Returns the speed value.
-    pub fn value(&self) -> u8 {
-        self.0
+    /// Returns the duration of a transition.
+    pub fn transition_time(&self) -> Generic<u32> {
+        self.0.into()
     }
 }
 

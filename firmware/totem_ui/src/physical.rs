@@ -17,6 +17,7 @@
 
 use core::ops::Range;
 
+use embedded_time::duration::Milliseconds;
 use totem_board::{
     adc::{Channel, ADC},
     peripheral::CalibratedPotentiometer,
@@ -91,12 +92,13 @@ impl<
 
     fn read_speed(&mut self) -> Speed {
         let value = read_mean(&mut self.p_adc, &mut self.p_speed, ITERATIONS);
-
-        Speed(adc_to_range(
+        let transition_ms = adc_to_inverted_range(
             value,
             PSpeed::MIN..PSpeed::MAX,
-            (Speed::MIN.into())..(Speed::MAX.into()),
-        ) as u8)
+            Speed::MIN..Speed::MAX,
+        );
+
+        Speed(Milliseconds(transition_ms))
     }
 
     fn read_temperature(&mut self) -> Temperature {
@@ -147,4 +149,13 @@ fn adc_to_range(
     scaled_value
         .saturating_add(output_range.start)
         .min(output_range.end)
+}
+
+fn adc_to_inverted_range(
+    value: u16,
+    adc_range: Range<u16>,
+    output_range: Range<u32>,
+) -> u32 {
+    let output_dynamic = output_range.len() as u32;
+    output_range.end - adc_to_range(value, adc_range, 0..output_dynamic)
 }

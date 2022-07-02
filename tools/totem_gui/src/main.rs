@@ -22,6 +22,7 @@ use gtk::{
 };
 use relm4::{send, AppUpdate, Model, RelmApp, Sender, WidgetPlus, Widgets};
 
+use embedded_time::duration::Milliseconds;
 use ercp_device::Device;
 use totem_ui::state::{Brightness, Mode, Speed, Temperature, UIState};
 
@@ -248,9 +249,9 @@ impl Widgets<AppModel, ()> for AppWidgets {
 
                     append = &gtk::Scale {
                         set_orientation: Horizontal,
-                        set_adjustment: &gtk::Adjustment::new(0.0, 0.0, 255.0, 1.0, 1.0, 1.0),
+                        set_adjustment: &gtk::Adjustment::new(100.0, 100.0, 13_000.0, 1.0, 1.0, 1.0),
                         connect_value_changed(sender) => move |value| {
-                            let speed = Speed::new(value.value() as u8);
+                            let speed = Speed::new(Milliseconds(value.value() as u32));
                             send!(sender, AppMsg::UpdateSpeed(speed));
                         },
                     },
