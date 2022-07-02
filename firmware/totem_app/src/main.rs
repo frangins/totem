@@ -41,6 +41,7 @@ mod app {
     use smart_leds::{brightness, SmartLedsWrite};
 
     use totem_app::{
+        chaser::Chaser,
         ercp::{ErcpContext, TotemRouter},
         led_strip::LedStripExt,
     };
@@ -50,7 +51,7 @@ mod app {
         peripheral::{ErcpSerial, LedStrip},
         prelude::*,
     };
-    use totem_ui::UI as _;
+    use totem_ui::{state::Mode, UI as _};
     use totem_utils::fake_timer::FakeTimer;
 
     #[cfg(feature = "ui_graphical")]
@@ -78,7 +79,7 @@ mod app {
     struct LocalResources {
         led_strip: LedStrip,
         time_config: TimeConfig,
-        chaser: RandomUnicolor<Uniform<u32>, NUM_LEDS>,
+        chaser: Chaser<NUM_LEDS>,
     }
 
     #[cfg(feature = "ui_physical")]
@@ -144,8 +145,7 @@ mod app {
         let ui = GraphicalUI::new();
 
         let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
-        let chaser =
-            RandomUnicolor::new(REFRESH_RATE, Uniform::new(300, 5_000));
+        let chaser = Chaser::None;
 
         let adapter = SerialAdapter::new(ercp_serial);
         let ercp = ErcpBasic::new(adapter, FakeTimer, TotemRouter);
@@ -197,6 +197,26 @@ mod app {
 
         let period = (1000 / time_config.refresh_rate.0).millis();
         update::spawn_at(monotonics::now() + period).unwrap();
+
+        match ui_state.mode {
+            Mode::Off => {
+                if !matches!(chaser, Chaser::None) {
+                    defmt::info!("Switching to Off mode.");
+                    led_strip.off();
+                    *chaser = Chaser::None;
+                }
+            }
+
+            Mode::RandomUnicolor => {
+                if !matches!(chaser, Chaser::RandomUnicolor(_)) {
+                    defmt::info!("Switching to RandomUnicolor mode.");
+                    *chaser = Chaser::RandomUnicolor(RandomUnicolor::new(
+                        REFRESH_RATE,
+                        Uniform::new(300, 5_000),
+                    ));
+                }
+            }
+        }
 
         if let Some(sequence) = chaser.next() {
             led_strip
