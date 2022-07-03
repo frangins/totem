@@ -267,9 +267,9 @@ impl Widgets<AppModel, ()> for AppWidgets {
 
                     append = &gtk::Scale {
                         set_orientation: Horizontal,
-                        set_adjustment: &gtk::Adjustment::new(0.0, 0.0, 255.0, 1.0, 1.0, 1.0),
+                        set_adjustment: &gtk::Adjustment::new(0.0, -85.0, 85.0, 1.0, 1.0, 1.0),
                         connect_value_changed(sender) => move |value| {
-                            let temperature = Temperature::new(value.value() as u8);
+                            let temperature = Temperature::new(value.value() as i8);
                             send!(sender, AppMsg::UpdateTemperature(temperature));
                         },
                     },

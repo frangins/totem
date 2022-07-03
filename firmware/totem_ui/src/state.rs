@@ -66,7 +66,7 @@ pub struct Speed(pub(crate) Milliseconds);
     Debug, Format, Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord,
 )]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct Temperature(pub(crate) u8);
+pub struct Temperature(pub(crate) i8);
 
 impl Default for Mode {
     fn default() -> Self {
@@ -122,17 +122,19 @@ impl Speed {
 
 impl Temperature {
     /// The minimum temperature value.
-    pub const MIN: u8 = 0;
+    pub const MIN: i8 = -85;
     /// The maximum temperature value.
-    pub const MAX: u8 = u8::MAX;
+    pub const MAX: i8 = 85;
 
     /// Creates a new temperature.
-    pub fn new(value: u8) -> Self {
+    ///
+    /// Negative value gives warmer colors, positive values colder.
+    pub fn new(value: i8) -> Self {
         Self(value)
     }
 
     /// Returns the temperature value.
-    pub fn value(&self) -> u8 {
+    pub fn value(&self) -> i8 {
         self.0
     }
 }

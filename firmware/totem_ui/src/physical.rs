@@ -109,7 +109,7 @@ impl<
             value,
             PTemperature::MIN..PTemperature::MAX,
             (Temperature::MIN.into())..(Temperature::MAX.into()),
-        ) as u8)
+        ) as i8)
     }
 }
 
