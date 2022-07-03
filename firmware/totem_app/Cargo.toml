@@ -24,7 +24,7 @@ features = ["serial"]
 
 [dependencies.led_effects]
 git = "https://github.com/frangins/led_effects.git"
-tag = "v0.1.0"
+branch = "develop"
 features = ["rand"]
 
 [dependencies.panic-probe]

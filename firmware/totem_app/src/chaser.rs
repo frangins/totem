@@ -27,7 +27,7 @@ pub enum Chaser<const N: usize> {
     None,
 
     /// A random unicolor chaser.
-    RandomUnicolor(RandomUnicolor<Uniform<u32>, N>),
+    RandomUnicolor(RandomUnicolor<Uniform<i16>, Uniform<u32>, N>),
 }
 
 impl<const N: usize> led_effects::chaser::Chaser<N> for Chaser<N> {

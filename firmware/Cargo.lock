@@ -325,8 +325,8 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "led_effects"
-version = "0.1.0"
-source = "git+https://github.com/frangins/led_effects.git?tag=v0.1.0#7cacd917a4c3e806e5db7c9c38ebf00c4651f3a8"
+version = "0.2.0-dev"
+source = "git+https://github.com/frangins/led_effects.git?branch=develop#17b9a22f0bf4e78f2e36487464dfede22cd470e7"
 dependencies = [
  "embedded-time",
  "rand",

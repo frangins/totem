@@ -38,7 +38,7 @@ mod app {
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
-        chaser::{Chaser as _, RandomUnicolor, SimpleRandomChaser},
+        chaser::{Chaser as _, RandomUnicolor},
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
@@ -216,6 +216,7 @@ mod app {
                     defmt::info!("Switching to RandomUnicolor mode.");
                     *chaser = Chaser::RandomUnicolor(RandomUnicolor::new(
                         REFRESH_RATE,
+                        Uniform::new(0, 255),
                         Uniform::new(300, 5_000),
                     ));
                 }
