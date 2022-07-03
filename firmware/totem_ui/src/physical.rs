@@ -95,10 +95,10 @@ impl<
         let transition_ms = adc_to_inverted_range(
             value,
             PSpeed::MIN..PSpeed::MAX,
-            Speed::MIN..Speed::MAX,
+            (Speed::MIN as i32)..(Speed::MAX as i32),
         );
 
-        Speed(Milliseconds(transition_ms))
+        Speed(Milliseconds(transition_ms as u32))
     }
 
     fn read_temperature(&mut self) -> Temperature {
@@ -126,13 +126,13 @@ fn read_mean(
 fn adc_to_range(
     adc_value: u16,
     adc_range: Range<u16>,
-    output_range: Range<u32>,
-) -> u32 {
-    let adc_dynamic = adc_range.len() as u32;
-    let output_dynamic = output_range.len() as u32;
+    output_range: Range<i32>,
+) -> i32 {
+    let adc_dynamic = adc_range.len() as i32;
+    let output_dynamic = output_range.len() as i32;
 
     // Value in 0..adc_dynamic.
-    let base_value = adc_value.saturating_sub(adc_range.start) as u32;
+    let base_value = adc_value.saturating_sub(adc_range.start) as i32;
 
     // Value in 0..output_dynamic.
     let scaled_value = if adc_dynamic >= output_dynamic {
@@ -154,8 +154,8 @@ fn adc_to_range(
 fn adc_to_inverted_range(
     value: u16,
     adc_range: Range<u16>,
-    output_range: Range<u32>,
-) -> u32 {
-    let output_dynamic = output_range.len() as u32;
+    output_range: Range<i32>,
+) -> i32 {
+    let output_dynamic = output_range.len() as i32;
     output_range.end - adc_to_range(value, adc_range, 0..output_dynamic)
 }
