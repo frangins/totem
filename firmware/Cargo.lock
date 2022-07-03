@@ -324,6 +324,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
+name = "lcd_1602_i2c"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d95f3d4e60311d71b8f4e4f70dc98b119ca6f48a14c523ab8c322c6a59286288"
+dependencies = [
+ "embedded-hal",
+]
+
+[[package]]
 name = "led_effects"
 version = "0.2.0-dev"
 source = "git+https://github.com/frangins/led_effects.git?branch=develop#17b9a22f0bf4e78f2e36487464dfede22cd470e7"
@@ -792,6 +801,7 @@ name = "totem_board"
 version = "1.0.0-dev"
 dependencies = [
  "cortex-m",
+ "lcd_1602_i2c",
  "stm32l4xx-hal",
  "totem_utils",
  "ws2812-spi",

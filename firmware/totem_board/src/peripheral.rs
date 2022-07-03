@@ -15,17 +15,19 @@
 
 //! The peripherals of the Totem board.
 
+use lcd_1602_i2c::Lcd;
 use ws2812_spi::prerendered::Ws2812;
 
 use crate::{
     adc::{Channel, ADC},
     gpio::{
-        Alternate, Analog, Input, PullDown, PushPull, PA0, PA1, PA2, PA3, PA4,
-        PA5, PA6, PA7, PB0, PC0, PC1, PC2, PC3, PC4,
+        Alternate, Analog, Input, OpenDrain, PullDown, PushPull, PA0, PA1, PA2,
+        PA3, PA4, PA5, PA6, PA7, PB0, PB8, PB9, PC0, PC1, PC2, PC3, PC4,
     },
+    i2c::I2c,
     serial::Serial,
     spi::Spi,
-    SPI1, USART2,
+    I2C1, SPI1, USART2,
 };
 
 /// The pin for the first potentiometer.
@@ -64,6 +66,12 @@ pub type LED_MISO = PA6<Alternate<PushPull, 5>>;
 /// The pin for the LED SPI MOSI line.
 pub type LED_MOSI = PA7<Alternate<PushPull, 5>>;
 
+/// The pin for the LCD screen I²C SCL line.
+pub type SCREEN_SCL = PB8<Alternate<OpenDrain, 4>>;
+
+/// The pin for the LCD screen I²C SDA line.
+pub type SCREEN_SDA = PB9<Alternate<OpenDrain, 4>>;
+
 /// The ERCP Basic Tx line.
 pub type ERCP_TX = PA2<Alternate<PushPull, 7>>;
 
@@ -73,20 +81,35 @@ pub type ERCP_RX = PA3<Alternate<PushPull, 7>>;
 /// The ADC for potentiometers.
 pub type P_ADC = ADC;
 
-/// The SPI for driving LEDs.
+/// The SPI peripheral for driving LEDs.
 pub type LED_SPI = SPI1;
 
-/// The UART for ERCP Basic.
+/// The I²C peripheral for driving the LCD screen.
+pub type SCREEN_I2C = I2C1;
+
+/// The UART peripheral for ERCP Basic.
 pub type ERCP_UART = USART2;
 
 /// The SPI for driving LEDs.
 pub type LedSpi = Spi<LED_SPI, (LED_SCK, LED_MISO, LED_MOSI)>;
 
-/// The LED strip driver.
-pub type LedStrip = Ws2812<'static, LedSpi>;
+/// The I²C for driving the LCD screen.
+pub type ScreenI2c = I2c<SCREEN_I2C, (SCREEN_SCL, SCREEN_SDA)>;
 
 /// The serial for ERCP Basic.
 pub type ErcpSerial = Serial<ERCP_UART, (ERCP_TX, ERCP_RX)>;
+
+/// The LED strip driver.
+pub type LedStrip = Ws2812<'static, LedSpi>;
+
+/// The LCD screen driver.
+pub type Screen = Lcd<ScreenI2c>;
+
+/// The LCD screen I²C address.
+pub const SCREEN_LCD_ADDRESS: u8 = 0x7C >> 1;
+
+/// The LCD screen RGB backlight controller I²C address.
+pub const SCREEN_RGB_ADDRESS: u8 = 0xC0 >> 1;
 
 /// A calibrated potentiometer.
 pub trait CalibratedPotentiometer: Channel {
@@ -107,7 +130,7 @@ impl CalibratedPotentiometer for R2 {
 }
 
 impl CalibratedPotentiometer for R3 {
-    const MIN: u16 = 53;
+    const MIN: u16 = 60;
     const MAX: u16 = 3832;
 }
 

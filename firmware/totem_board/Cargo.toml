@@ -7,6 +7,7 @@ license = "GPL-3.0-only"
 
 [dependencies]
 cortex-m = { version = "0.7.5", features = ["inline-asm"] }
+lcd_1602_i2c = "0.3.0"
 totem_utils = { path = "../totem_utils" }
 ws2812-spi = "0.4.0"
 

@@ -15,15 +15,17 @@
 
 //! The Totem board.
 
+use lcd_1602_i2c::Lcd;
 use totem_utils::delay::AsmDelay;
 use ws2812_spi::prerendered::Ws2812;
 
 use crate::{
     adc::ADC,
     constants::*,
+    i2c::{self, I2c},
     peripheral::*,
     prelude::*,
-    serial::{self, Config, Serial},
+    serial::{self, Serial},
     spi::Spi,
 };
 
@@ -51,6 +53,8 @@ pub struct Board {
     pub p_adc: P_ADC,
     /// The LED strip driver.
     pub led_strip: LedStrip,
+    /// The LCD screen driver.
+    pub screen: Screen,
     /// The serial for ERCP Basic.
     pub ercp_serial: ErcpSerial,
 }
@@ -105,6 +109,18 @@ impl Board {
             &mut gpioa.afrl,
         );
 
+        let screen_scl = gpiob.pb8.into_alternate_open_drain(
+            &mut gpiob.moder,
+            &mut gpiob.otyper,
+            &mut gpiob.afrh,
+        );
+
+        let screen_sda = gpiob.pb9.into_alternate_open_drain(
+            &mut gpiob.moder,
+            &mut gpiob.otyper,
+            &mut gpiob.afrh,
+        );
+
         let ercp_tx = gpioa.pa2.into_alternate(
             &mut gpioa.moder,
             &mut gpioa.otyper,
@@ -118,6 +134,7 @@ impl Board {
         );
 
         let mut delay = AsmDelay::new(clocks.sysclk().to_Hz());
+
         let p_adc = ADC::new(
             dp.ADC1,
             dp.ADC_COMMON,
@@ -135,17 +152,32 @@ impl Board {
             &mut rcc.apb2,
         );
 
-        let led_strip = Ws2812::new(led_spi, led_buffer);
+        let screen_i2c = I2c::i2c1(
+            dp.I2C1,
+            (screen_scl, screen_sda),
+            i2c::Config::new(100.kHz(), clocks),
+            &mut rcc.apb1r1,
+        );
 
         let mut ercp_serial = Serial::usart2(
             dp.USART2,
             (ercp_tx, ercp_rx),
-            Config::default().baudrate(115_200.bps()),
+            serial::Config::default().baudrate(115_200.bps()),
             clocks,
             &mut rcc.apb1r1,
         );
 
         ercp_serial.listen(serial::Event::Rxne);
+
+        let led_strip = Ws2812::new(led_spi, led_buffer);
+
+        let screen = Lcd::new(
+            screen_i2c,
+            SCREEN_LCD_ADDRESS,
+            SCREEN_RGB_ADDRESS,
+            &mut delay,
+        )
+        .unwrap();
 
         Self {
             r1,
@@ -159,6 +191,7 @@ impl Board {
             microphone,
             p_adc,
             led_strip,
+            screen,
             ercp_serial,
         }
     }
