@@ -15,7 +15,7 @@
 
 //! Delay implementation.
 
-use embedded_hal::blocking::delay::DelayUs;
+use embedded_hal::blocking::delay::{DelayMs, DelayUs};
 
 /// A basic Delay using `cortex_m::asm::delay`.
 pub struct AsmDelay {
@@ -34,5 +34,11 @@ impl DelayUs<u32> for AsmDelay {
     fn delay_us(&mut self, us: u32) {
         let tick = (us as u64) * (self.ahb_frequency as u64) / 1_000_000;
         cortex_m::asm::delay(tick as u32);
+    }
+}
+
+impl DelayMs<u16> for AsmDelay {
+    fn delay_ms(&mut self, ms: u16) {
+        self.delay_us(ms as u32 * 1000);
     }
 }
