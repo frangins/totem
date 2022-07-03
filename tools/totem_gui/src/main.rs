@@ -231,7 +231,15 @@ impl Widgets<AppModel, ()> for AppWidgets {
 
                     append = &gtk::Scale {
                         set_orientation: Horizontal,
-                        set_adjustment: &gtk::Adjustment::new(0.0, 0.0, 255.0, 1.0, 1.0, 1.0),
+                        set_adjustment: &gtk::Adjustment::new(
+                            0.0,
+                            Brightness::MIN as f64,
+                            Brightness::MAX as f64 + 1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ),
+
                         connect_value_changed(sender) => move |value| {
                             let brightness = Brightness::new(value.value() as u8);
                             send!(sender, AppMsg::UpdateBrightness(brightness));
@@ -249,7 +257,15 @@ impl Widgets<AppModel, ()> for AppWidgets {
 
                     append = &gtk::Scale {
                         set_orientation: Horizontal,
-                        set_adjustment: &gtk::Adjustment::new(100.0, 100.0, 13_000.0, 1.0, 1.0, 1.0),
+                        set_adjustment: &gtk::Adjustment::new(
+                            0.0,
+                            Speed::MIN as f64,
+                            Speed::MAX as f64 + 1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ),
+
                         connect_value_changed(sender) => move |value| {
                             let speed = Speed::new(Milliseconds(value.value() as u32));
                             send!(sender, AppMsg::UpdateSpeed(speed));
@@ -267,7 +283,15 @@ impl Widgets<AppModel, ()> for AppWidgets {
 
                     append = &gtk::Scale {
                         set_orientation: Horizontal,
-                        set_adjustment: &gtk::Adjustment::new(0.0, -85.0, 85.0, 1.0, 1.0, 1.0),
+                        set_adjustment: &gtk::Adjustment::new(
+                            0.0,
+                            Temperature::MIN as f64,
+                            Temperature::MAX as f64 + 1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ),
+
                         connect_value_changed(sender) => move |value| {
                             let temperature = Temperature::new(value.value() as i8);
                             send!(sender, AppMsg::UpdateTemperature(temperature));
