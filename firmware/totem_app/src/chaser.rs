@@ -20,6 +20,7 @@ use led_effects::{
     time::TimeConfig,
 };
 use rand::distributions::Uniform;
+use totem_ui::state::Temperature;
 
 /// A Totem chaser.
 pub enum Chaser<const N: usize> {
@@ -46,6 +47,18 @@ impl<const N: usize> Iterator for Chaser<N> {
         match self {
             Self::None => None,
             Self::RandomUnicolor(chaser) => chaser.next().map(Into::into),
+        }
+    }
+}
+
+impl<const N: usize> Chaser<N> {
+    /// Sets the color temperature.
+    pub fn set_temperature(&mut self, temperature: Temperature) {
+        match self {
+            Self::None => (),
+            Self::RandomUnicolor(chaser) => {
+                chaser.set_temperature(temperature.value())
+            }
         }
     }
 }

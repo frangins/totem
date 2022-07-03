@@ -225,6 +225,7 @@ mod app {
 
         time_config.transition_time = ui_state.speed.transition_time();
         chaser.set_time_config(time_config);
+        chaser.set_temperature(ui_state.temperature);
 
         if let Some(sequence) = chaser.next() {
             led_strip
