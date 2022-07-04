@@ -161,6 +161,10 @@ impl Widgets<AppModel, ()> for AppWidgets {
                 set_margin_all: 5,
                 set_spacing: 5,
 
+                ////////////////////////////////////////////////////////////////
+                //                         Connection                         //
+                ////////////////////////////////////////////////////////////////
+
                 append = &gtk::Entry {
                     set_placeholder_text: Some("/dev/ttyACM0"),
                     connect_changed(sender) => move |entry| {
@@ -200,6 +204,10 @@ impl Widgets<AppModel, ()> for AppWidgets {
                         set_label: watch! { &model.ping_status },
                     }
                 },
+
+                ////////////////////////////////////////////////////////////////
+                //                        LED control                         //
+                ////////////////////////////////////////////////////////////////
 
                 append = &gtk::Box {
                     set_orientation: Vertical,
@@ -310,6 +318,10 @@ impl Widgets<AppModel, ()> for AppWidgets {
                         },
                     },
                 },
+
+                ////////////////////////////////////////////////////////////////
+                //                          Buttons                           //
+                ////////////////////////////////////////////////////////////////
 
                 append = &gtk::Box {
                     set_orientation: Vertical,
