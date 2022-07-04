@@ -15,7 +15,7 @@
 
 //! The physical user interface for Totem.
 
-use core::ops::Range;
+use core::{fmt::Debug, ops::Range};
 
 use embedded_time::duration::Milliseconds;
 use totem_board::{
@@ -27,12 +27,13 @@ use totem_board::{
 use crate::{state::*, UI};
 
 /// The physical user interface for Totem.
-pub struct PhysicalUI<PMode, PBrightness, PSpeed, PTemperature> {
+pub struct PhysicalUI<PMode, PBrightness, PSpeed, PTemperature, BScreen> {
     p_adc: ADC,
     p_mode: PMode,
     p_brightness: PBrightness,
     p_speed: PSpeed,
     p_temperature: PTemperature,
+    b_screen: BScreen,
 }
 
 const ITERATIONS: u32 = 200;
@@ -42,7 +43,8 @@ impl<
         PBrightness: CalibratedPotentiometer,
         PSpeed: CalibratedPotentiometer,
         PTemperature: CalibratedPotentiometer,
-    > PhysicalUI<PMode, PBrightness, PSpeed, PTemperature>
+        BScreen: InputPin<Error = impl Debug>,
+    > PhysicalUI<PMode, PBrightness, PSpeed, PTemperature, BScreen>
 {
     /// Creates a new physical UI.
     pub fn new(
@@ -51,6 +53,7 @@ impl<
         p_brightness: PBrightness,
         p_speed: PSpeed,
         p_temperature: PTemperature,
+        b_screen: BScreen,
     ) -> Self {
         Self {
             p_adc,
@@ -58,6 +61,7 @@ impl<
             p_brightness,
             p_speed,
             p_temperature,
+            b_screen,
         }
     }
 }
@@ -67,7 +71,8 @@ impl<
         PBrightness: CalibratedPotentiometer,
         PSpeed: CalibratedPotentiometer,
         PTemperature: CalibratedPotentiometer,
-    > UI for PhysicalUI<PMode, PBrightness, PSpeed, PTemperature>
+        BScreen: InputPin<Error = impl Debug>,
+    > UI for PhysicalUI<PMode, PBrightness, PSpeed, PTemperature, BScreen>
 {
     fn read_mode(&mut self) -> Mode {
         let value = read_mean(&mut self.p_adc, &mut self.p_mode, ITERATIONS);
@@ -110,6 +115,14 @@ impl<
             PTemperature::MIN..PTemperature::MAX,
             (Temperature::MIN.into())..(Temperature::MAX.into()),
         ) as i8)
+    }
+
+    fn read_screen_state(&mut self) -> ScreenState {
+        if self.b_screen.is_high().unwrap() {
+            ScreenState::On
+        } else {
+            ScreenState::Off
+        }
     }
 }
 

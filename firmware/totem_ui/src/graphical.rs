@@ -58,6 +58,10 @@ impl UI for GraphicalUI {
     fn read_temperature(&mut self) -> Temperature {
         self.state.temperature
     }
+
+    fn read_screen_state(&mut self) -> ScreenState {
+        self.state.screen_state
+    }
 }
 
 /// Handles UI_Update commands.

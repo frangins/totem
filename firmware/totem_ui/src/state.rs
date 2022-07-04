@@ -32,6 +32,8 @@ pub struct UIState {
     pub speed: Speed,
     /// The color temperature.
     pub temperature: Temperature,
+    /// The state of the LCD screen.
+    pub screen_state: ScreenState,
 }
 
 /// The mode.
@@ -68,6 +70,16 @@ pub struct Speed(pub(crate) Milliseconds);
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct Temperature(pub(crate) i8);
 
+/// The screen state.
+#[derive(Debug, Format, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub enum ScreenState {
+    /// The screen is off.
+    Off,
+    /// The screen is on.
+    On,
+}
+
 impl Default for Mode {
     fn default() -> Self {
         Self::Off
@@ -77,6 +89,12 @@ impl Default for Mode {
 impl Default for Speed {
     fn default() -> Self {
         Self(Milliseconds(Self::MIN))
+    }
+}
+
+impl Default for ScreenState {
+    fn default() -> Self {
+        Self::Off
     }
 }
 

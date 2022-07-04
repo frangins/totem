@@ -33,7 +33,7 @@ pub use graphical::GraphicalUI;
 #[cfg(feature = "physical")]
 pub use physical::PhysicalUI;
 
-use state::{Brightness, Mode, Speed, Temperature, UIState};
+use state::{Brightness, Mode, ScreenState, Speed, Temperature, UIState};
 
 /// The user interface for Totem.
 pub trait UI {
@@ -44,6 +44,7 @@ pub trait UI {
             brightness: self.read_brightness(),
             speed: self.read_speed(),
             temperature: self.read_temperature(),
+            screen_state: self.read_screen_state(),
         }
     }
 
@@ -58,4 +59,7 @@ pub trait UI {
 
     /// Reads the value of the temperature potentiometer.
     fn read_temperature(&mut self) -> Temperature;
+
+    /// Reads the value of the screen toggle button.
+    fn read_screen_state(&mut self) -> ScreenState;
 }

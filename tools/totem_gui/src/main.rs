@@ -24,7 +24,9 @@ use relm4::{send, AppUpdate, Model, RelmApp, Sender, WidgetPlus, Widgets};
 
 use embedded_time::duration::Milliseconds;
 use ercp_device::Device;
-use totem_ui::state::{Brightness, Mode, Speed, Temperature, UIState};
+use totem_ui::state::{
+    Brightness, Mode, ScreenState, Speed, Temperature, UIState,
+};
 
 use totem_gui::device::{DeviceExt, TIMEOUT};
 
@@ -42,6 +44,7 @@ enum AppMsg {
     UpdateBrightness(Brightness),
     UpdateSpeed(Speed),
     UpdateTemperature(Temperature),
+    UpdateScreenState(ScreenState),
     Connect,
     Ping,
 }
@@ -102,6 +105,15 @@ impl AppUpdate for AppModel {
             AppMsg::UpdateTemperature(temperature) => {
                 if temperature != self.ui_state.temperature {
                     self.ui_state.temperature = temperature;
+                    if let Some(device) = &mut self.device {
+                        device.ui_update(&self.ui_state).ok();
+                    }
+                }
+            }
+
+            AppMsg::UpdateScreenState(screen_state) => {
+                if screen_state != self.ui_state.screen_state {
+                    self.ui_state.screen_state = screen_state;
                     if let Some(device) = &mut self.device {
                         device.ui_update(&self.ui_state).ok();
                     }
@@ -298,6 +310,36 @@ impl Widgets<AppModel, ()> for AppWidgets {
                         },
                     },
                 },
+
+                append = &gtk::Box {
+                    set_orientation: Vertical,
+
+                    append = &gtk::Label {
+                        set_label: "Buttons",
+                    },
+
+                    append = &gtk::Box {
+                        set_orientation: Horizontal,
+
+                        append = &gtk::CheckButton {
+                            set_label: Some("Screen"),
+                            connect_toggled(sender) => move |button| {
+                                if button.is_active() {
+                                    send!(
+                                        sender,
+                                        AppMsg::UpdateScreenState(ScreenState::On)
+                                    );
+                                } else {
+                                    send!(
+                                        sender,
+                                        AppMsg::UpdateScreenState(ScreenState::Off)
+                                    );
+                                }
+                            },
+                        },
+                    },
+                },
+
             },
         }
     }

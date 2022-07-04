@@ -62,7 +62,7 @@ mod app {
     use totem_ui::GraphicalUI;
 
     #[cfg(feature = "ui_physical")]
-    use totem_board::peripheral::{R1, R2, R3, S1};
+    use totem_board::peripheral::{B1, R1, R2, R3, S1};
     #[cfg(feature = "ui_physical")]
     use totem_ui::PhysicalUI;
 
@@ -87,7 +87,7 @@ mod app {
     }
 
     #[cfg(feature = "ui_physical")]
-    type UI = PhysicalUI<R1, R2, R3, S1>;
+    type UI = PhysicalUI<R1, R2, R3, S1, B1>;
     #[cfg(feature = "ui_graphical")]
     type UI = GraphicalUI;
 
@@ -145,7 +145,7 @@ mod app {
         ////////////////////////////////////////////////////////////////////////
 
         #[cfg(feature = "ui_physical")]
-        let ui = PhysicalUI::new(p_adc, r1, r2, r3, s1);
+        let ui = PhysicalUI::new(p_adc, r1, r2, r3, s1, b1);
         #[cfg(feature = "ui_graphical")]
         let ui = GraphicalUI::new();
 
