@@ -54,7 +54,7 @@ pub struct Board {
     /// The LED strip driver.
     pub led_strip: LedStrip,
     /// The LCD screen driver.
-    pub screen: Screen,
+    pub screen: Option<Screen>,
     /// The serial for ERCP Basic.
     pub ercp_serial: ErcpSerial,
 }
@@ -171,13 +171,17 @@ impl Board {
 
         let led_strip = Ws2812::new(led_spi, led_buffer);
 
+        // If the screen is not available for any reason, this would fail. Then,
+        // let’s just map the Result to an Option, and assume that there may or
+        // may not be a screen connected to the board. This way, any issue with
+        // the screen will not break the whole Totem.
         let screen = Lcd::new(
             screen_i2c,
             SCREEN_LCD_ADDRESS,
             SCREEN_RGB_ADDRESS,
             &mut delay,
         )
-        .unwrap();
+        .ok();
 
         Self {
             r1,
