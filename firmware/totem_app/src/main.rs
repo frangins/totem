@@ -53,14 +53,14 @@ mod app {
     use totem_board::{
         board::Board,
         constants::{LED_BUFFER_SIZE, NUM_LEDS},
-        peripheral::{ErcpSerial, LedStrip},
+        peripheral::{ErcpSerial, LedStrip, Screen},
         prelude::*,
     };
     use totem_ui::{
-        state::{Brightness, Mode, UIState},
+        state::{Brightness, Mode, ScreenState, UIState},
         UI as _,
     };
-    use totem_utils::fake_timer::FakeTimer;
+    use totem_utils::{delay::AsmDelay, fake_timer::FakeTimer};
 
     #[cfg(feature = "ui_graphical")]
     use totem_ui::GraphicalUI;
@@ -69,6 +69,9 @@ mod app {
     use totem_board::peripheral::{B1, R1, R2, R3, S1};
     #[cfg(feature = "ui_physical")]
     use totem_ui::PhysicalUI;
+
+    const MESSAGES: [(&str, &str); 2] =
+        [(" Chateau Perche", "  Avrilly 2022"), ("Totem <3<3", "")];
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Resource types                             //
@@ -80,6 +83,7 @@ mod app {
     #[shared]
     struct SharedResources {
         ui: UI,
+        screen: Option<Screen>,
         ercp: ErcpBasic<SerialAdapter<ErcpSerial>, FakeTimer, TotemRouter>,
     }
 
@@ -107,6 +111,13 @@ mod app {
     #[derive(Debug, Format)]
     pub enum LedTaskMessage {
         UpdateMode(UIState),
+        Next,
+    }
+
+    #[derive(Debug, Format)]
+    pub enum ScreenTaskMessage {
+        Start,
+        Stop,
         Next,
     }
 
@@ -153,11 +164,15 @@ mod app {
             microphone,
             p_adc,
             mut led_strip,
-            screen,
+            mut screen,
             ercp_serial,
         } = Board::init(dp, cx.local.led_buffer);
 
+        // Ensure both the LED strip and screen start off.
         led_strip.off();
+        if let Some(ref mut screen) = screen {
+            screen.set_rgb(0, 0, 0).unwrap();
+        }
 
         ////////////////////////////////////////////////////////////////////////
         //                          Resources init                            //
@@ -192,7 +207,7 @@ mod app {
         ui_task::spawn().unwrap();
 
         (
-            SharedResources { ui, ercp },
+            SharedResources { ui, screen, ercp },
             LocalResources {
                 ui_state,
                 led_strip,
@@ -228,9 +243,23 @@ mod app {
         let state = cx.shared.ui.lock(|ui| ui.read_state());
 
         if state != *ui_state {
-            *ui_state = state;
             defmt::debug!("UI State: {:?}", state);
+
             led_task::spawn(LedTaskMessage::UpdateMode(state)).unwrap();
+
+            if state.mode != ui_state.mode
+                || state.screen_state != ui_state.screen_state
+            {
+                let screen_message = match (state.mode, state.screen_state) {
+                    (Mode::Off, _) => ScreenTaskMessage::Stop,
+                    (_, ScreenState::Off) => ScreenTaskMessage::Stop,
+                    (_, ScreenState::On) => ScreenTaskMessage::Start,
+                };
+
+                screen_task::spawn(screen_message).unwrap();
+            }
+
+            *ui_state = state;
         }
     }
 
@@ -294,6 +323,71 @@ mod app {
                 }
             }
         }
+    }
+
+    #[task(
+        priority = 1,
+        capacity = 2,
+        local = [
+            next_handle: Option<screen_task::SpawnHandle> = None,
+            messages: [(&'static str, &'static str); MESSAGES.len()] = MESSAGES,
+            index: usize = 0,
+        ],
+        shared = [screen],
+    )]
+    fn screen_task(mut cx: screen_task::Context, message: ScreenTaskMessage) {
+        let screen_task::LocalResources {
+            next_handle,
+            messages,
+            index,
+        } = cx.local;
+
+        cx.shared.screen.lock(|screen| {
+            if let Some(screen) = screen {
+                match message {
+                    ScreenTaskMessage::Start => {
+                        if next_handle.is_none() {
+                            screen.set_rgb(255, 255, 255).unwrap();
+                            screen_task::spawn(ScreenTaskMessage::Next)
+                                .unwrap();
+                        }
+                    }
+
+                    ScreenTaskMessage::Stop => {
+                        if let Some(handle) = next_handle.take() {
+                            handle.cancel().unwrap();
+                        }
+
+                        let mut delay = AsmDelay::new(80_000_000);
+                        screen.clear(&mut delay).unwrap();
+                        screen.set_rgb(0, 0, 0).unwrap();
+                        *index = 0;
+                    }
+
+                    ScreenTaskMessage::Next => {
+                        let handle = screen_task::spawn_at(
+                            monotonics::now() + 4.secs(),
+                            ScreenTaskMessage::Next,
+                        )
+                        .unwrap();
+
+                        *next_handle = Some(handle);
+
+                        let mut delay = AsmDelay::new(80_000_000);
+                        screen.clear(&mut delay).unwrap();
+                        screen.set_cursor_position(0, 0).unwrap();
+                        screen.write_str(messages[*index].0).unwrap();
+                        screen.set_cursor_position(0, 1).unwrap();
+                        screen.write_str(messages[*index].1).unwrap();
+
+                        *index += 1;
+                        if *index == messages.len() {
+                            *index = 0;
+                        }
+                    }
+                }
+            }
+        })
     }
 
     #[task(priority = 3, binds = USART2, shared = [ercp])]
