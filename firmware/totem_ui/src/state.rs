@@ -21,7 +21,7 @@ use embedded_time::duration::{Generic, Milliseconds};
 use serde::{Deserialize, Serialize};
 
 /// The state of the user interface.
-#[derive(Debug, Format, Default, Clone)]
+#[derive(Debug, Format, Default, Clone, Copy, PartialEq)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct UIState {
     /// The mode.
