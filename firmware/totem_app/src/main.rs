@@ -35,6 +35,7 @@ use defmt_rtt as _;
 mod app {
     use systick_monotonic::Systick;
 
+    use defmt::Format;
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
@@ -42,7 +43,7 @@ mod app {
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
-    use smart_leds::{brightness, SmartLedsWrite};
+    use smart_leds::{brightness as set_brightness, SmartLedsWrite};
 
     use totem_app::{
         chaser::Chaser,
@@ -55,7 +56,10 @@ mod app {
         peripheral::{ErcpSerial, LedStrip},
         prelude::*,
     };
-    use totem_ui::{state::Mode, UI as _};
+    use totem_ui::{
+        state::{Brightness, Mode, UIState},
+        UI as _,
+    };
     use totem_utils::fake_timer::FakeTimer;
 
     #[cfg(feature = "ui_graphical")]
@@ -81,7 +85,12 @@ mod app {
 
     #[local]
     struct LocalResources {
+        // UI task
+        ui_state: UIState,
+
+        // LED task
         led_strip: LedStrip,
+        brightness: Brightness,
         time_config: TimeConfig,
         chaser: Chaser<NUM_LEDS>,
     }
@@ -90,6 +99,16 @@ mod app {
     type UI = PhysicalUI<R1, R2, R3, S1, B1>;
     #[cfg(feature = "ui_graphical")]
     type UI = GraphicalUI;
+
+    ////////////////////////////////////////////////////////////////////////////
+    //                             Message types                              //
+    ////////////////////////////////////////////////////////////////////////////
+
+    #[derive(Debug, Format)]
+    pub enum LedTaskMessage {
+        UpdateMode(UIState),
+        Next,
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Configuration                              //
@@ -144,16 +163,25 @@ mod app {
         //                          Resources init                            //
         ////////////////////////////////////////////////////////////////////////
 
+        // Shared
+
         #[cfg(feature = "ui_physical")]
         let ui = PhysicalUI::new(p_adc, r1, r2, r3, s1, b1);
         #[cfg(feature = "ui_graphical")]
         let ui = GraphicalUI::new();
 
-        let time_config = TimeConfig::new(REFRESH_RATE, Seconds(2));
-        let chaser = Chaser::None;
-
         let adapter = SerialAdapter::new(ercp_serial);
         let ercp = ErcpBasic::new(adapter, FakeTimer, TotemRouter);
+
+        // UI task
+
+        let ui_state = UIState::default();
+
+        // LED task
+
+        let brightness = Brightness::default();
+        let time_config = TimeConfig::new(REFRESH_RATE, Seconds(1));
+        let chaser = Chaser::None;
 
         defmt::info!("Firmware initialised!");
 
@@ -161,12 +189,14 @@ mod app {
         //                           Task startup                             //
         ////////////////////////////////////////////////////////////////////////
 
-        update::spawn().unwrap();
+        ui_task::spawn().unwrap();
 
         (
             SharedResources { ui, ercp },
             LocalResources {
+                ui_state,
                 led_strip,
+                brightness,
                 time_config,
                 chaser,
             },
@@ -189,49 +219,80 @@ mod app {
     //                                 Tasks                                  //
     ////////////////////////////////////////////////////////////////////////////
 
-    #[task(priority = 2, local = [led_strip, time_config, chaser], shared = [ui])]
-    fn update(mut cx: update::Context) {
-        let update::LocalResources {
+    #[task(priority = 1, local = [ui_state], shared = [ui])]
+    fn ui_task(mut cx: ui_task::Context) {
+        let ui_task::LocalResources { ui_state } = cx.local;
+
+        ui_task::spawn_at(monotonics::now() + 10.millis()).unwrap();
+
+        let state = cx.shared.ui.lock(|ui| ui.read_state());
+
+        if state != *ui_state {
+            *ui_state = state;
+            defmt::debug!("UI State: {:?}", state);
+            led_task::spawn(LedTaskMessage::UpdateMode(state)).unwrap();
+        }
+    }
+
+    #[task(
+        priority = 2,
+        capacity = 2,
+        local = [led_strip, time_config, brightness, chaser],
+    )]
+    fn led_task(cx: led_task::Context, message: LedTaskMessage) {
+        let led_task::LocalResources {
             led_strip,
             time_config,
+            brightness,
             chaser,
         } = cx.local;
 
-        let ui_state = cx.shared.ui.lock(|ui| ui.read_state());
-        defmt::debug!("UI State: {:?}", ui_state);
+        match message {
+            LedTaskMessage::UpdateMode(ui_state) => {
+                match ui_state.mode {
+                    Mode::Off => {
+                        if !matches!(chaser, Chaser::None) {
+                            defmt::info!("Switching to Off mode.");
+                            led_strip.off();
+                            *chaser = Chaser::None;
+                        }
+                    }
 
-        let period = (1000 / time_config.refresh_rate.0).millis();
-        update::spawn_at(monotonics::now() + period).unwrap();
+                    Mode::RandomUnicolor => {
+                        if !matches!(chaser, Chaser::RandomUnicolor(_)) {
+                            defmt::info!("Switching to RandomUnicolor mode.");
+                            *chaser =
+                                Chaser::RandomUnicolor(RandomUnicolor::new(
+                                    REFRESH_RATE,
+                                    Uniform::new(0, 255),
+                                    Uniform::new(300, 5_000),
+                                ));
 
-        match ui_state.mode {
-            Mode::Off => {
-                if !matches!(chaser, Chaser::None) {
-                    defmt::info!("Switching to Off mode.");
-                    led_strip.off();
-                    *chaser = Chaser::None;
+                            led_task::spawn(LedTaskMessage::Next).unwrap();
+                        }
+                    }
                 }
+
+                *brightness = ui_state.brightness;
+                time_config.transition_time = ui_state.speed.transition_time();
+                chaser.set_time_config(time_config);
+                chaser.set_temperature(ui_state.temperature);
             }
 
-            Mode::RandomUnicolor => {
-                if !matches!(chaser, Chaser::RandomUnicolor(_)) {
-                    defmt::info!("Switching to RandomUnicolor mode.");
-                    *chaser = Chaser::RandomUnicolor(RandomUnicolor::new(
-                        REFRESH_RATE,
-                        Uniform::new(0, 255),
-                        Uniform::new(300, 5_000),
-                    ));
+            LedTaskMessage::Next => {
+                if let Some(sequence) = chaser.next() {
+                    let period = (1000 / time_config.refresh_rate.0).millis();
+                    led_task::spawn_at(
+                        monotonics::now() + period,
+                        LedTaskMessage::Next,
+                    )
+                    .unwrap();
+
+                    led_strip
+                        .write(set_brightness(sequence, brightness.value()))
+                        .unwrap();
                 }
             }
-        }
-
-        time_config.transition_time = ui_state.speed.transition_time();
-        chaser.set_time_config(time_config);
-        chaser.set_temperature(ui_state.temperature);
-
-        if let Some(sequence) = chaser.next() {
-            led_strip
-                .write(brightness(sequence, ui_state.brightness.value()))
-                .unwrap();
         }
     }
 
