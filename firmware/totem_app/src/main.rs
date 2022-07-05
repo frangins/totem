@@ -40,6 +40,7 @@ mod app {
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
         chaser::{Chaser as _, RandomUnicolor},
+        sequence::Sequence as _,
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
@@ -266,14 +267,22 @@ mod app {
     #[task(
         priority = 2,
         capacity = 2,
-        local = [led_strip, time_config, brightness, chaser],
+        local = [
+            led_strip,
+            time_config,
+            brightness,
+            chaser,
+            drive_screen: bool = false,
+        ],
+        shared = [screen],
     )]
-    fn led_task(cx: led_task::Context, message: LedTaskMessage) {
+    fn led_task(mut cx: led_task::Context, message: LedTaskMessage) {
         let led_task::LocalResources {
             led_strip,
             time_config,
             brightness,
             chaser,
+            drive_screen,
         } = cx.local;
 
         match message {
@@ -306,6 +315,7 @@ mod app {
                 time_config.transition_time = ui_state.speed.transition_time();
                 chaser.set_time_config(time_config);
                 chaser.set_temperature(ui_state.temperature);
+                *drive_screen = ui_state.screen_state == ScreenState::On;
             }
 
             LedTaskMessage::Next => {
@@ -316,6 +326,17 @@ mod app {
                         LedTaskMessage::Next,
                     )
                     .unwrap();
+
+                    if *drive_screen {
+                        let color = sequence.get_main_color();
+                        cx.shared.screen.lock(|screen| {
+                            if let Some(screen) = screen {
+                                screen
+                                    .set_rgb(color.r, color.g, color.b)
+                                    .unwrap();
+                            }
+                        });
+                    }
 
                     led_strip
                         .write(set_brightness(sequence, brightness.value()))
