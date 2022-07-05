@@ -44,12 +44,12 @@ mod app {
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
-    use smart_leds::{brightness as set_brightness, SmartLedsWrite};
+    use smart_leds::{brightness as set_brightness, SmartLedsWrite as _};
 
     use totem_app::{
         chaser::Chaser,
         ercp::{ErcpContext, TotemRouter},
-        led_strip::LedStripExt,
+        led_strip::LedStripExt as _,
     };
     use totem_board::{
         board::Board,

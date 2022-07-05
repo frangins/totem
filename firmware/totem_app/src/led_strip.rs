@@ -15,7 +15,7 @@
 
 //! LED strip utilities.
 
-use smart_leds::{colors::BLACK, SmartLedsWrite};
+use smart_leds::{colors::BLACK, SmartLedsWrite as _};
 
 use totem_board::{constants::NUM_LEDS, peripheral::LedStrip};
 
