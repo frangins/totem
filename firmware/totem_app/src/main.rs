@@ -227,7 +227,8 @@ mod app {
     #[idle]
     fn idle(_: idle::Context) -> ! {
         loop {
-            continue;
+            #[cfg(not(feature = "debug"))]
+            totem_board::asm::wfi();
         }
     }
 
