@@ -335,7 +335,7 @@ dependencies = [
 [[package]]
 name = "led_effects"
 version = "0.2.0-dev"
-source = "git+https://github.com/frangins/led_effects.git?branch=develop#17b9a22f0bf4e78f2e36487464dfede22cd470e7"
+source = "git+https://github.com/frangins/led_effects.git?branch=develop#b7f8f5a90ff76ede362286bdfdce9fa94e71fcce"
 dependencies = [
  "embedded-time",
  "rand",
