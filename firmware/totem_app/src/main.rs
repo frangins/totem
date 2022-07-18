@@ -40,7 +40,7 @@ mod app {
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
         chaser::{Chaser as _, RandomUnicolor},
-        sequence::Sequence as _,
+        sequence::{ConfigWithMainColor as _, Sequence as _},
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
@@ -329,7 +329,7 @@ mod app {
                     .unwrap();
 
                     if *drive_screen {
-                        let color = sequence.get_main_color();
+                        let color = sequence.config().main_color();
                         cx.shared.screen.lock(|screen| {
                             if let Some(screen) = screen {
                                 screen
