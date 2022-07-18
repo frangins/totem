@@ -20,18 +20,20 @@ use led_effects::{
     time::TimeConfig,
 };
 use rand::distributions::Uniform;
+
+use totem_board::constants::NUM_LEDS;
 use totem_ui::state::Temperature;
 
 /// A Totem chaser.
-pub enum Chaser<const N: usize> {
+pub enum Chaser {
     /// No chaser.
     None,
 
     /// A random unicolor chaser.
-    RandomUnicolor(RandomUnicolor<Uniform<i16>, Uniform<u32>, N>),
+    RandomUnicolor(RandomUnicolor<Uniform<i16>, Uniform<u32>, NUM_LEDS>),
 }
 
-impl<const N: usize> led_effects::chaser::Chaser<N> for Chaser<N> {
+impl led_effects::chaser::Chaser<NUM_LEDS> for Chaser {
     fn set_time_config(&mut self, time_config: &TimeConfig) {
         match self {
             Self::None => (),
@@ -40,8 +42,8 @@ impl<const N: usize> led_effects::chaser::Chaser<N> for Chaser<N> {
     }
 }
 
-impl<const N: usize> Iterator for Chaser<N> {
-    type Item = OneParameterSequenceEnum<N>;
+impl Iterator for Chaser {
+    type Item = OneParameterSequenceEnum<NUM_LEDS>;
 
     fn next(&mut self) -> Option<Self::Item> {
         match self {
@@ -51,7 +53,7 @@ impl<const N: usize> Iterator for Chaser<N> {
     }
 }
 
-impl<const N: usize> Chaser<N> {
+impl Chaser {
     /// Sets the color temperature.
     pub fn set_temperature(&mut self, temperature: Temperature) {
         match self {

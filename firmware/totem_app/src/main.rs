@@ -53,7 +53,7 @@ mod app {
     };
     use totem_board::{
         board::Board,
-        constants::{LED_BUFFER_SIZE, NUM_LEDS},
+        constants::LED_BUFFER_SIZE,
         peripheral::{ErcpSerial, LedStrip, Screen},
         prelude::*,
     };
@@ -97,7 +97,7 @@ mod app {
         led_strip: LedStrip,
         brightness: Brightness,
         time_config: TimeConfig,
-        chaser: Chaser<NUM_LEDS>,
+        chaser: Chaser,
     }
 
     #[cfg(feature = "ui_physical")]
