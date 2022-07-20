@@ -77,10 +77,12 @@ impl<
     fn read_mode(&mut self) -> Mode {
         let value = read_mean(&mut self.p_adc, &mut self.p_mode, ITERATIONS);
 
-        if value < (PMode::MAX - PMode::MIN) / 2 {
+        if value < (PMode::MAX - PMode::MIN) / 3 {
             Mode::Off
-        } else {
+        } else if value < (PMode::MAX - PMode::MIN) / 3 * 2 {
             Mode::RandomUnicolor
+        } else {
+            Mode::RainbowFontain
         }
     }
 

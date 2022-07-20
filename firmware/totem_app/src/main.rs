@@ -39,12 +39,17 @@ mod app {
     use embedded_time::{duration::Seconds, rate::Hertz};
     use ercp_basic::{adapter::SerialAdapter, ErcpBasic};
     use led_effects::{
-        chaser::{Chaser as _, RandomUnicolor},
-        sequence::{ConfigWithMainColor as _, Sequence as _},
+        chaser::{Chaser as _, RainbowChaser, RandomUnicolor},
+        sequence::{
+            ConfigWithMainColor as _, DuplicateConfig, RainbowConfig,
+            Sequence as _,
+        },
         time::TimeConfig,
     };
     use rand::distributions::Uniform;
-    use smart_leds::{brightness as set_brightness, SmartLedsWrite as _};
+    use smart_leds::{
+        brightness as set_brightness, colors::RED, SmartLedsWrite as _,
+    };
 
     use totem_app::{
         chaser::Chaser,
@@ -300,14 +305,39 @@ mod app {
                     Mode::RandomUnicolor => {
                         if !matches!(chaser, Chaser::RandomUnicolor(_)) {
                             defmt::info!("Switching to RandomUnicolor mode.");
+
+                            if matches!(chaser, Chaser::None) {
+                                led_task::spawn(LedTaskMessage::Next).unwrap();
+                            }
+
                             *chaser =
                                 Chaser::RandomUnicolor(RandomUnicolor::new(
                                     REFRESH_RATE,
                                     Uniform::new(0, 255),
                                     Uniform::new(300, 5_000),
                                 ));
+                        }
+                    }
 
-                            led_task::spawn(LedTaskMessage::Next).unwrap();
+                    Mode::RainbowFontain => {
+                        if !matches!(chaser, Chaser::RainbowFontain(_)) {
+                            defmt::info!("Switching to RainbowFontain mode.");
+
+                            if matches!(chaser, Chaser::None) {
+                                led_task::spawn(LedTaskMessage::Next).unwrap();
+                            }
+
+                            *chaser =
+                                Chaser::RainbowFontain(RainbowChaser::new(
+                                    DuplicateConfig {
+                                        config: RainbowConfig {
+                                            first_color: RED.into(),
+                                            range: 150,
+                                        },
+                                        duplicates: 8,
+                                    },
+                                    time_config,
+                                ));
                         }
                     }
                 }

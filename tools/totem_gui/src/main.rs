@@ -238,6 +238,16 @@ impl Widgets<AppModel, ()> for AppWidgets {
                                 }
                             },
                         },
+
+                        append = &gtk::CheckButton {
+                            set_label: Some("Rainbow fontain"),
+                            set_group: Some(&mode_selector),
+                            connect_toggled(sender) => move |button| {
+                                if button.is_active() {
+                                    send!(sender, AppMsg::UpdateMode(Mode::RainbowFontain));
+                                }
+                            },
+                        },
                     },
                 },
 

@@ -49,6 +49,11 @@ pub enum Mode {
     ///
     /// All LEDs are following the same random color progression.
     RandomUnicolor,
+
+    /// The rainbow fontain mode.
+    ///
+    /// LED strips show a symmetrical rainbow divergence.
+    RainbowFontain,
 }
 
 /// The brightness of the LED strip.
