@@ -18,6 +18,9 @@
 /// The number of LEDs per strip.
 pub const LEDS_PER_STRIP: usize = 13;
 
+/// The number of LEDs per half strip.
+pub const LEDS_PER_HALF_STRIP: usize = 7;
+
 /// The number of LED strips per side.
 pub const STRIPS_PER_SIDE: usize = 2;
 
