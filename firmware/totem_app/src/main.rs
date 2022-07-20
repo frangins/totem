@@ -76,8 +76,18 @@ mod app {
     #[cfg(feature = "ui_physical")]
     use totem_ui::PhysicalUI;
 
-    const MESSAGES: [(&str, &str); 2] =
-        [(" Chateau Perche", "  Avrilly 2022"), ("Totem <3<3", "")];
+    const MESSAGES: [(&str, &str); 10] = [
+        (" Chateau Perche ", "  Avrilly 2022  "),
+        ("  <3 AMOUR <3   ", "   <3 AMOUR <3  "),
+        ("   Bon Voyage   ", " >------------> "),
+        ("   Le gagerre   ", "   est sterdu   "),
+        ("     Tu es      ", "  belle / beau  "),
+        (" Chateau Perche ", "  Avrilly 2022  "),
+        ("     Calins     ", "    Gratuits    "),
+        ("   <3 Free <3   ", "   <3 Hugs <3   "),
+        ("  Le malidule   ", "     grante     "),
+        ("   Profitons    ", "  de l instant  "),
+    ];
 
     ////////////////////////////////////////////////////////////////////////////
     //                             Resource types                             //
