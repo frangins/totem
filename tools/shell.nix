@@ -10,6 +10,6 @@ mkShell {
     # Project dependencies.
     pkgconfig
     gtk4
-    libudev
+    udev
   ];
 }
