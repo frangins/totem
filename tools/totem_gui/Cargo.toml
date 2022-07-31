@@ -1,6 +1,6 @@
 [package]
 name = "totem_gui"
-version = "1.0.0-dev"
+version = "1.0.0"
 authors = ["Jean-Philippe Cugnet <jean-philippe@cugnet.eu>"]
 edition = "2021"
 license = "GPL-3.0-only"
