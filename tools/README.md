@@ -2,8 +2,10 @@
 
 Tools to work with Totem.
 
-*This is a work in progress, please look at the `develop` branch for ongoing
-development.*
+## Available tools
+
+* `totem_gui` — An alternative User Interface for interacting with the Totem
+    firmware.
 
 ## [Contributing](CONTRIBUTING.md)
 
