@@ -2,9 +2,6 @@
 
 The firmware running on Totem.
 
-*This is a work in progress, please look at the `develop` branch for ongoing
-development.*
-
 ## [Contributing](CONTRIBUTING.md)
 
 Before contributing to this project, please read the

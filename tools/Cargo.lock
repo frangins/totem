@@ -1153,7 +1153,7 @@ dependencies = [
 
 [[package]]
 name = "totem_gui"
-version = "1.0.0-dev"
+version = "1.0.0"
 dependencies = [
  "embedded-time",
  "ercp_device",
@@ -1166,7 +1166,7 @@ dependencies = [
 
 [[package]]
 name = "totem_ui"
-version = "1.0.0-dev"
+version = "1.0.0"
 dependencies = [
  "defmt",
  "embedded-time",
