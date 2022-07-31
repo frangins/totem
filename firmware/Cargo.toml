@@ -1,0 +1,13 @@
+[workspace]
+members = [
+    "totem_app",
+    "totem_board",
+    "totem_ui",
+    "totem_utils",
+]
+
+[profile.release]
+opt-level = "s"
+codegen-units = 1
+lto = true
+debug = true

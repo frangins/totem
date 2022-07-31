@@ -1,0 +1,26 @@
+[package]
+name = "totem_ui"
+version = "1.0.0"
+authors = ["Jean-Philippe Cugnet <jean-philippe@cugnet.eu>"]
+edition = "2021"
+license = "GPL-3.0-only"
+
+[dependencies]
+defmt = "0.3.0"
+embedded-time = "0.12.1"
+postcard = { version = "1.0.0", optional = true }
+serde = { version = "1.0.*", default-features = false, optional = true }
+totem_board = { path = "../totem_board", optional = true }
+
+[dependencies.ercp_basic]
+git = "https://github.com/ercp/ercp_basic.rs.git"
+rev = "2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
+optional = true
+
+[features]
+physical = ["totem_board"]
+graphical = ["ercp_basic", "postcard", "serde", "embedded-time/serde"]
+
+[lib]
+test = false
+bench = false

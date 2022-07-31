@@ -1,0 +1,19 @@
+[package]
+name = "totem_gui"
+version = "1.0.0"
+authors = ["Jean-Philippe Cugnet <jean-philippe@cugnet.eu>"]
+edition = "2021"
+license = "GPL-3.0-only"
+description = "A graphical user interface for controlling the Totem."
+
+[dependencies]
+embedded-time = "0.12.1"
+gtk = { version = "0.4.8", package = "gtk4" }
+postcard = { version = "1.0.0", features = ["alloc"] }
+relm4 = "0.4.4"
+relm4-macros = "0.4.4"
+totem_ui = { path = "../../firmware/totem_ui", features = ["graphical"] }
+
+[dependencies.ercp_device]
+git = "https://github.com/ercp/toolbox"
+rev = "313f232ca3a68b987b62aa14bd77ec8429445c37"

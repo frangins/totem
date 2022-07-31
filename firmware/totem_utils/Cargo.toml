@@ -1,0 +1,18 @@
+[package]
+name = "totem_utils"
+version = "1.0.0"
+authors = ["Jean-Philippe Cugnet <jean-philippe@cugnet.eu>"]
+edition = "2021"
+license = "GPL-3.0-only"
+
+[dependencies]
+cortex-m = "0.7.5"
+embedded-hal = "0.2.0"
+
+[dependencies.ercp_basic]
+git = "https://github.com/ercp/ercp_basic.rs.git"
+rev = "2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
+
+[lib]
+test = false
+bench = false

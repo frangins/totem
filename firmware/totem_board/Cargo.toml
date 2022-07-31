@@ -1,0 +1,21 @@
+[package]
+name = "totem_board"
+version = "1.0.0"
+authors = ["Jean-Philippe Cugnet <jean-philippe@cugnet.eu>"]
+edition = "2021"
+license = "GPL-3.0-only"
+
+[dependencies]
+cortex-m = { version = "0.7.5", features = ["inline-asm"] }
+lcd_1602_i2c = "0.3.0"
+totem_utils = { path = "../totem_utils" }
+ws2812-spi = "0.4.0"
+
+[dependencies.stm32l4xx-hal]
+git = "https://github.com/ejpcmac/stm32l4xx-hal.git"
+rev = "b3361a268353b72a8393a35518fb211b82dbc186"
+features = ["stm32l476", "rt"]
+
+[lib]
+test = false
+bench = false
