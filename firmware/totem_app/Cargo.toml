@@ -19,7 +19,7 @@ systick-monotonic = "1.0.0"
 
 [dependencies.ercp_basic]
 git = "https://github.com/ercp/ercp_basic.rs.git"
-branch = "develop"
+rev = "2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
 features = ["serial"]
 
 [dependencies.led_effects]

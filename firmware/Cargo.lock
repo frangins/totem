@@ -252,7 +252,7 @@ dependencies = [
 [[package]]
 name = "ercp_basic"
 version = "0.1.0-dev"
-source = "git+https://github.com/ercp/ercp_basic.rs.git?branch=develop#2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
+source = "git+https://github.com/ercp/ercp_basic.rs.git?rev=2a9640f20822dbc10b7d6b66f66a5b9564b3cb16#2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
 dependencies = [
  "embedded-crc-macros",
  "embedded-hal",
@@ -727,7 +727,7 @@ dependencies = [
 [[package]]
 name = "stm32l4xx-hal"
 version = "0.7.1"
-source = "git+https://github.com/ejpcmac/stm32l4xx-hal.git?branch=stm32l47x-adc#b3361a268353b72a8393a35518fb211b82dbc186"
+source = "git+https://github.com/ejpcmac/stm32l4xx-hal.git?rev=b3361a268353b72a8393a35518fb211b82dbc186#b3361a268353b72a8393a35518fb211b82dbc186"
 dependencies = [
  "bitfield",
  "bxcan",

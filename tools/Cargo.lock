@@ -227,11 +227,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ercp_basic"
+version = "0.1.0-dev"
+source = "git+https://github.com/ercp/ercp_basic.rs.git?rev=2a9640f20822dbc10b7d6b66f66a5b9564b3cb16#2a9640f20822dbc10b7d6b66f66a5b9564b3cb16"
+dependencies = [
+ "embedded-crc-macros",
+ "heapless",
+]
+
+[[package]]
 name = "ercp_device"
 version = "0.1.0-dev"
-source = "git+https://github.com/ercp/toolbox?branch=develop#313f232ca3a68b987b62aa14bd77ec8429445c37"
+source = "git+https://github.com/ercp/toolbox?rev=313f232ca3a68b987b62aa14bd77ec8429445c37#313f232ca3a68b987b62aa14bd77ec8429445c37"
 dependencies = [
- "ercp_basic",
+ "ercp_basic 0.1.0-dev (git+https://github.com/ercp/ercp_basic.rs.git?branch=develop)",
  "serialport",
 ]
 
@@ -1161,7 +1170,7 @@ version = "1.0.0-dev"
 dependencies = [
  "defmt",
  "embedded-time",
- "ercp_basic",
+ "ercp_basic 0.1.0-dev (git+https://github.com/ercp/ercp_basic.rs.git?rev=2a9640f20822dbc10b7d6b66f66a5b9564b3cb16)",
  "postcard",
  "serde",
 ]

@@ -16,4 +16,4 @@ totem_ui = { path = "../../firmware/totem_ui", features = ["graphical"] }
 
 [dependencies.ercp_device]
 git = "https://github.com/ercp/toolbox"
-branch = "develop"
+rev = "313f232ca3a68b987b62aa14bd77ec8429445c37"
