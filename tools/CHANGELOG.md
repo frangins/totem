@@ -10,6 +10,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-* Initial version.
+* Initial version, featuring:
+    * basic widget for connecting to the board via ERCP Basic,
+    * control for the mode, brightness, speed, and temperature,
+    * on / off control for the screen.
 
 [1.0.0]: https://github.com/frangins/totem/releases/tag/v1.0.0
